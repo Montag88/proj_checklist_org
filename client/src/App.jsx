@@ -1,12 +1,12 @@
 import React from 'react';
 
-import CheckContainer from './CheckContainer';
+import TasksContainer from './TasksContainer';
 
 export default function App() {
 
   return (
     <div>
-      <CheckContainer/>
+      <TasksContainer/>
     </div>
   );
 }

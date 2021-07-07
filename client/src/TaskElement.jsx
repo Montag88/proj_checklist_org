@@ -1,7 +1,6 @@
 import React from 'react';
 
-export default function CheckElement() {
-  
+export default function TaskElement(props) {
   
   return (
     <tr>
@@ -16,6 +15,9 @@ export default function CheckElement() {
       </td>
       <td>
         <button type='button'>^</button>
+      </td>
+      <td>
+        <input type='button' onClick={() => props.deleteTask(props.id)}/>
       </td>
     </tr>
   );
