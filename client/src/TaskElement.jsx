@@ -17,7 +17,7 @@ export default function TaskElement(props) {
         <button type='button'>^</button>
       </td>
       <td>
-        <input type='button' onClick={() => props.deleteTask(props.id)}/>
+        <input type='button' onClick={() => props.deleteTask(props.index)}/>
       </td>
     </tr>
   );
