@@ -1,4 +1,4 @@
-function _deepCopy(obj) {
-  var deepCopy = JSON.parse(JSON.stringify(obj));
-  return deepCopy;
-};
+export default function deepCopy(obj) {
+  const copy = JSON.parse(JSON.stringify(obj));
+  return copy;
+}
