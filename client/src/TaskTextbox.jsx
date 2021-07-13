@@ -6,7 +6,9 @@ export default function TaskTextbox() {
   return <Textbox />;
 }
 
-const Textbox = styled.div`
+const Textbox = styled.input.attrs(() => ({
+  type: 'text',
+}))`
   display: inline-block;
   vertical-align: top;
 
