@@ -1,10 +1,11 @@
 import React from 'react';
 
-export default function App() {
+import TasksContainer from './TasksComponent';
 
+export default function App() {
   return (
-    <div>
-      Hello World!
-    </div>
+    <>
+      <TasksContainer />
+    </>
   );
 }
