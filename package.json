@@ -7,7 +7,8 @@
     "test": "jest",
     "build": "webpack",
     "react-dev": "webpack --watch --progress",
-    "server-dev": "nodemon ./server/index.js"
+    "server-dev": "nodemon ./server/index.js",
+    "lint:css": "stylelint './client/src/*.jsx' './client/*.jsx' './client/public/styles/*.css' || echo \"lint failed for some file(s).\""
   },
   "author": "",
   "license": "ISC",
@@ -29,6 +30,12 @@
     "nodemon": "^2.0.9",
     "react-is": "^17.0.2",
     "react-test-renderer": "^17.0.2",
+    "stylelint": "^13.13.1",
+    "stylelint-config-idiomatic-order": "^8.1.0",
+    "stylelint-config-recommended": "^5.0.0",
+    "stylelint-config-styled-components": "^0.1.1",
+    "stylelint-order": "^4.1.0",
+    "stylelint-processor-styled-components": "^1.10.0",
     "webpack": "^5.41.1",
     "webpack-cli": "^4.7.2"
   },

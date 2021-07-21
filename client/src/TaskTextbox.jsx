@@ -6,15 +6,24 @@ export default function TaskTextbox() {
   return <Textbox />;
 }
 
-const Textbox = styled.input.attrs(() => ({
+const Textbox = styled.textarea.attrs(() => ({
   type: 'text',
+  placeholder: '...',
+  rows: 2,
 }))`
   display: inline-block;
+
+  width: 20em;
+  min-width: 10em;
+  min-height: 1.5em;
+
+  padding: 0;
+  border: 1px solid grey;
+  margin: 0.1em;
+  
+  border-radius: 4px;
+  
+  font-family: "Roboto Mono", monospace;
+  resize: both;
   vertical-align: top;
-
-  height: 25px;
-  width: 200px;
-
-  border-radius: 2px;
-  border: 3px solid purple;
 `;

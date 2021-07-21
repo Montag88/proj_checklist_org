@@ -17,15 +17,17 @@ TaskButton.propTypes = {
 };
 
 const Button = styled.div`
-  background: ${({ background }) => background} no-repeat top left;
-  background-size: contain;
-
   display: inline-block;
-  vertical-align: top;
 
-  height: 25px;
-  width: 25px;
+  width: 1.5em;
+  height: 1.5em;
 
-  border-radius: 2px;
-  border: 3px solid grey;
+  border: 1px solid grey;
+  margin: 0.1em;
+
+  background: ${({ background }) => background} no-repeat top left;
+  background-position: center;
+  background-size: 80%;
+
+  border-radius: 4px;
 `;

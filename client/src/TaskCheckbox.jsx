@@ -17,15 +17,17 @@ TaskCheckbox.propTypes = {
 };
 
 const Checkbox = styled.div`
-background: ${({ background }) => background} no-repeat top left;
-background-size: contain;
+  display: inline-block;
 
-display: inline-block;
-vertical-align: top;
+  width: 1.5em;
+  height: 1.5em;
 
-height: 25px;
-width: 25px;
+  border: 1px solid grey;
+  margin: 0.1em;
 
-border-radius: 5px;
-border: 3px solid grey;
+  background: ${({ background }) => background} no-repeat top left;
+  background-position: center;
+  background-size: contain;
+
+  border-radius: 4px;
 `;

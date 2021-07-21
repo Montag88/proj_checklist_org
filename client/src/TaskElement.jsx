@@ -6,69 +6,63 @@ import TaskButton from './TaskButton';
 import TaskCheckbox from './TaskCheckbox';
 import TaskTextbox from './TaskTextbox';
 
-import { addTask, deleteTask } from '../helpers';
+import {
+  addTask, deleteTask, changeHTMLDisplay, moveTaskUp, moveTaskDown,
+} from '../helpers';
 
 export default function TaskElement({ parent }) {
-  // CAN CONVERT SVG TO DATA URL TO REDUCE FILES AND ADDITIONAL CLIENTSIDE REQUESTS
-  // USE GZIP TO COMPRESS SVGs
-
-  // When checked, fade text color/ change container colors/lock and add function buttons
+  // true - fade text/element, change functional buttons
+  // false - shows default
   const [checkState, setCheck] = useState(false);
+
   function checkboxHandler() {
     console.log('in checkHandler');
     setCheck((prevState) => !prevState);
   }
-  // when expanded, renders child tasks, button changes to collapse, container expands
+
+  // true - shows child tasks, toggles with collapse, container expands
+  // false - hide child tasks, toggles with expand
   const [expandState, setExpand] = useState(true);
+
   useEffect(() => {
-    // const children = document.getElementById(`${parent.taskID}subtaskContainer`).children;
-    const children = document.getElementById(`${parent.taskID}subtaskContainer`).children;
-    console.log('children: ', children);
-    if (!expandState) {
-      for (let i = 0; i < children.length; i += 1) {
-        children[i].style.display = 'none';
-      }
-    } else {
-      for (let i = 0; i < children.length; i += 1) {
-        children[i].style.display = 'block';
-      }
-    }
+    const { children } = document.getElementById(`${parent.taskID}subtasks`);
+    return !expandState ? changeHTMLDisplay(children, 'none') : changeHTMLDisplay(children, 'block');
   },
   [expandState]);
-  // use useeffect to collapse/expand children of subtask container when expanded state is modified
-  // find subtask container by html id
-  // select all children and set display to none
 
   function expandHandler() {
     console.log('in expandHandler');
     setExpand((prevState) => !prevState);
   }
+
   const [tasksState, setTasks] = useState({ order: [] });
 
   function mapElements(taskID, i) {
     const parentData = {
-      i,
       tasksState,
       setTasks,
       taskID,
+      i,
     };
     return <TaskElement key={taskID} parent={parentData} />;
   }
 
   return (
-    <div>
-      <Container>
+    <TaskContainer id={`${parent.taskID}task`}>
+      <UIContainer>
         <TaskCheckbox onClick={() => checkboxHandler()} background={checkState ? 'url(images/cross.svg)' : 'null'} />
         <TaskTextbox />
-        <TaskButton onClick={() => expandHandler()} background={expandState ? 'url(images/chevron-up.svg)' : 'url(images/chevron-down.svg)'} alt={expandState ? 'Collapse' : 'Expand'} />
+        <ExpandButton onClick={() => expandHandler()} background={expandState ? 'url(images/chevron-up.svg)' : 'url(images/chevron-down.svg)'} display={tasksState.order.length ? 'block' : 'none'} alt={expandState ? 'Collapse' : 'Expand'} />
         <TaskButton onClick={() => addTask(tasksState, setTasks)} background="url(images/plus.svg)" alt="Add SubTask" />
         <TaskButton onClick={() => deleteTask(parent.tasksState, parent.setTasks, parent.i)} background="url(images/trash.svg)" alt="Delete Task" />
         <Dragbox />
-      </Container>
-      <SubtaskContainer id={`${parent.taskID}subtaskContainer`}>
+        <TaskButton onClick={() => moveTaskUp(parent.tasksState, parent.setTasks, parent.i)} />
+        <TaskButton onClick={() => moveTaskDown(parent.tasksState, parent.setTasks, parent.i)} />
+      </UIContainer>
+      <SubtaskContainer id={`${parent.taskID}subtasks`}>
         {tasksState.order.map((taskID, i) => mapElements(taskID, i))}
       </SubtaskContainer>
-    </div>
+    </TaskContainer>
   );
 }
 
@@ -87,19 +81,27 @@ TaskElement.propTypes = {
   }),
 };
 
-const SubtaskContainer = styled.div``;
+const TaskContainer = styled.div`
+  margin: 0 0 0 2em;
+`;
 
-const Container = styled.div`
+const SubtaskContainer = styled.div`
+`;
+
+const UIContainer = styled.div`
   white-space: nowrap;
 `;
 
+const ExpandButton = styled(TaskButton)`
+`;
+
 const Dragbox = styled.div`
-  background: url(images/menu-vertical.svg) no-repeat top left;
-  background-size: contain;
-
   display: inline-block;
-  vertical-align: top;
 
-  height: 25px;
-  width: 20px;
+  width: 1em;
+  height: 1.5em;
+
+  background: url(images/menu-vertical.svg) no-repeat top left;
+  background-position: top;
+  background-size: contain;
 `;
