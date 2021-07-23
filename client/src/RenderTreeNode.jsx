@@ -5,11 +5,10 @@ import PropTypes from 'prop-types';
 // eslint-disable-next-line import/no-cycle
 import TaskTreeNode from './TaskTreeNode';
 
-export default function RenderTreeNode({ node, setNode }) {
+export default function RenderTreeNode({ node }) {
   function mapElements(taskID, i) {
     const props = {
       node,
-      setNode,
       taskID,
       i,
     };
@@ -25,7 +24,6 @@ export default function RenderTreeNode({ node, setNode }) {
 
 RenderTreeNode.defaultProps = {
   node: null,
-  setNode: null,
 };
 
 RenderTreeNode.propTypes = {
@@ -33,7 +31,6 @@ RenderTreeNode.propTypes = {
     children: PropTypes.arrayOf(PropTypes.number),
     ID: PropTypes.number,
   }),
-  setNode: PropTypes.func,
 };
 
 const SubtaskContainer = styled.div`

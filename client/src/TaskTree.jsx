@@ -43,10 +43,6 @@ export default class TaskTree extends React.Component {
     this.addNode = this.addNode.bind(this);
   }
 
-  // const [node, setNode] = useState({
-  //   ID: 0,
-  //   children: [],
-  // });
   addNode() {
     console.log('In addNode');
     this.setState(({ root }) => {
