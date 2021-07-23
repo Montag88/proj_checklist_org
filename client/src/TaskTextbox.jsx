@@ -1,10 +1,19 @@
 import React from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-export default function TaskTextbox() {
-  return <Textbox />;
+export default function TaskTextbox({ checkState }) {
+  const bcolor = checkState ? 'grey' : 'white';
+  return <Textbox bcolor={bcolor} />;
 }
+
+TaskTextbox.defaultProps = {
+  checkState: false,
+};
+
+TaskTextbox.propTypes = {
+  checkState: PropTypes.bool,
+};
 
 const Textbox = styled.textarea.attrs(() => ({
   type: 'text',
@@ -12,15 +21,15 @@ const Textbox = styled.textarea.attrs(() => ({
   rows: 2,
 }))`
   display: inline-block;
-
   width: 20em;
   min-width: 10em;
   min-height: 1.5em;
-
+  
   padding: 0;
   border: 1px solid grey;
   margin: 0.1em;
   
+  background-color: ${(props) => props.bcolor};
   border-radius: 4px;
   
   font-family: "Roboto Mono", monospace;
