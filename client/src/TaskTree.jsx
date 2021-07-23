@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 import TaskButton from './TaskButton';
 import RenderTreeNode from './RenderTreeNode';
 
-import { addNode } from '../helpers';
+import { generateNodeID } from '../helpers';
 
-export default function TaskTree() {
+export default class TaskTree extends React.Component {
   // REMOVE AND SIMPLIFY ANY DUPLICATE CODE
   // CLEAN CODE OF ERRORS CONSTANTLY
 
@@ -32,20 +32,41 @@ export default function TaskTree() {
   // light text editing
   // convert svg to data URL
   // gzip to compress svgs
+  constructor() {
+    super();
+    this.state = {
+      root: {
+        ID: 0,
+        children: [],
+      },
+    };
+    this.addNode = this.addNode.bind(this);
+  }
 
-  const [node, setNode] = useState({
-    ID: 0,
-    children: [],
-  });
+  // const [node, setNode] = useState({
+  //   ID: 0,
+  //   children: [],
+  // });
+  addNode() {
+    console.log('In addNode');
+    this.setState(({ root }) => {
+      console.log('root in addNode: ', root);
+      root.children.push(generateNodeID(root.children));
+      return { ...root };
+    });
+  }
 
-  return (
-    <Main>
-      <UIContainer>
-        <TaskButton onClick={() => addNode(node, setNode)} background="url(images/plus.svg)" />
-      </UIContainer>
-      <RenderTreeNode node={node} setNode={setNode} />
-    </Main>
-  );
+  render() {
+    const { root } = this.state;
+    return (
+      <Main>
+        <UIContainer>
+          <TaskButton onClick={() => this.addNode(root)} background="url(images/plus.svg)" />
+        </UIContainer>
+        <RenderTreeNode node={root} />
+      </Main>
+    );
+  }
 }
 
 const UIContainer = styled.div`

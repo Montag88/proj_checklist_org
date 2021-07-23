@@ -44,10 +44,7 @@ export default function TaskTreeNode({ props }) {
   }
 
   function renderExpandButton() {
-    let display = 'none';
-    if (node.children.length > 0) {
-      display = 'inline-block';
-    }
+    const display = (node.children.length > 0) ? 'inline-block' : 'none';
     return (
       <TaskButton
         onClick={() => expandHandler()}
