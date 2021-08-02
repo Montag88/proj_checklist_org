@@ -9,16 +9,12 @@ import TaskButton from './TaskButton';
 import TaskCheckbox from './TaskCheckbox';
 import TaskTextbox from './TaskTextbox';
 
-// import {
-//   addNode, deleteNode, changeHTMLDisplay, moveNode,
-// } from './utils/helpers';
-
 export default function TaskTreeNode({ nodeData, methods }) {
   const {
     path,
     id,
     parentID,
-    data,
+    // data,
     children,
     expanded,
     checked,
@@ -29,21 +25,12 @@ export default function TaskTreeNode({ nodeData, methods }) {
     checkNode,
     expandNode,
   } = methods;
-  // This fires uneccesarily, can refactor similar to conditional rendering of xb
-  // useEffect(() => {
-  //   console.log('in expand effect: ');
-  //   const { children } = document.getElementById(`${props.taskID}subtasks`);
-  //   return !expandState ? changeHTMLDisplay(children, 'none') :
-  // changeHTMLDisplay(children, 'block');
-  // },
-  // [expandState]);
 
   function renderExpandButton() {
     const display = (children.length > 0) ? 'inline-block' : 'none';
     return (
       <TaskButton
         onClick={() => expandNode(id)}
-        // id={`${node.taskID}xb`}
         background={expanded ? 'url(images/chevron-up.svg)' : 'url(images/chevron-down.svg)'}
         display={display}
       />
@@ -80,9 +67,7 @@ TaskTreeNode.defaultProps = {
     expanded: false,
     checked: false,
   },
-  methods: {
-    addNode: null,
-  },
+  methods: {},
 };
 
 TaskTreeNode.propTypes = {
@@ -99,6 +84,7 @@ TaskTreeNode.propTypes = {
     addNode: PropTypes.func,
     deleteNode: PropTypes.func,
     checkNode: PropTypes.func,
+    expandNode: PropTypes.func,
   }),
 };
 

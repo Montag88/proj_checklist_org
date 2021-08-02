@@ -91,7 +91,6 @@ export default class TaskTree extends Component {
   findNodeDFS(targetID, node) {
     console.log('in findNode');
     const currNode = node || this.state;
-    console.log('startnode in findnode: ', currNode);
     if (currNode.id === targetID) {
       console.log('target acquired');
       return currNode;
