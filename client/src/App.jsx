@@ -1,11 +1,11 @@
 import React from 'react';
 
-import TasksContainer from './TasksComponent';
+import TaskTree from './TaskTree';
 
 export default function App() {
   return (
     <>
-      <TasksContainer />
+      <TaskTree />
     </>
   );
 }

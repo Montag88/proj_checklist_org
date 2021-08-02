@@ -2,22 +2,30 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-export default function TaskButton({ onClick, background }) {
-  return <Button onClick={onClick} background={background} />;
+export default function TaskButton({
+  onClick, background, id, display,
+}) {
+  return <Button onClick={onClick} background={background} id={id} display={display} />;
 }
 
 TaskButton.defaultProps = {
   onClick: null,
   background: null,
+  id: null,
+  display: null,
 };
 
 TaskButton.propTypes = {
   onClick: PropTypes.func,
   background: PropTypes.string,
+  id: PropTypes.string,
+  display: PropTypes.string,
 };
 
-const Button = styled.div`
-  display: inline-block;
+const Button = styled.div.attrs((props) => ({
+  id: props.id,
+}))`
+  display: ${({ display }) => (display || 'inline-block')};
 
   width: 1.5em;
   height: 1.5em;
