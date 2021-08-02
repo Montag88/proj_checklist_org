@@ -5,7 +5,8 @@ export function deepCopy(obj) {
 
 // generate unique taskID
 export function generateNodeID(nodeIDs) {
-  console.log('in generate taskID');
+  // nodeIDs is set of existing IDs.
+  console.log('in generate nodeID');
   const max = 100000;
   const nodeID = Math.floor(Math.random() * max);
   // need a better scheme, will generate random num for now

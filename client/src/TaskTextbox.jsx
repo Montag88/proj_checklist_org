@@ -2,17 +2,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-export default function TaskTextbox({ checkState }) {
-  const bcolor = checkState ? 'grey' : 'white';
+export default function TaskTextbox({ checked }) {
+  const bcolor = checked ? 'grey' : 'white';
   return <Textbox bcolor={bcolor} />;
 }
 
 TaskTextbox.defaultProps = {
-  checkState: false,
+  checked: false,
 };
 
 TaskTextbox.propTypes = {
-  checkState: PropTypes.bool,
+  checked: PropTypes.bool,
 };
 
 const Textbox = styled.textarea.attrs(() => ({

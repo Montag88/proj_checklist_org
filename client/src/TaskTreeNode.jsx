@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
@@ -9,87 +9,97 @@ import TaskButton from './TaskButton';
 import TaskCheckbox from './TaskCheckbox';
 import TaskTextbox from './TaskTextbox';
 
-import {
-  addNode, deleteNode, changeHTMLDisplay, moveNode,
-} from '../helpers';
+// import {
+//   addNode, deleteNode, changeHTMLDisplay, moveNode,
+// } from './utils/helpers';
 
-export default function TaskTreeNode({ props }) {
-  const [node, setNode] = useState({
-    ID: props.taskID,
-    children: [],
-  });
-  // true - fade text/element, change functional buttons
-  // false - shows default
-  const [checkState, setCheck] = useState(false);
-  // true - shows child tasks, toggles with collapse, container expands
-  // false - hide child tasks, toggles with expand
-  const [expandState, setExpand] = useState(true);
-
+export default function TaskTreeNode({ nodeData, methods }) {
+  const {
+    path,
+    id,
+    parentID,
+    data,
+    children,
+    expanded,
+    checked,
+  } = nodeData;
+  const {
+    addNode,
+    deleteNode,
+    checkNode,
+    expandNode,
+  } = methods;
   // This fires uneccesarily, can refactor similar to conditional rendering of xb
-  useEffect(() => {
-    console.log('in expand effect: ');
-    const { children } = document.getElementById(`${props.taskID}subtasks`);
-    return !expandState ? changeHTMLDisplay(children, 'none') : changeHTMLDisplay(children, 'block');
-  },
-  [expandState]);
-
-  function checkboxHandler() {
-    console.log('in checkHandler');
-    setCheck((prevState) => !prevState);
-  }
-
-  function expandHandler() {
-    console.log('in expandHandler');
-    setExpand((prevState) => !prevState);
-  }
+  // useEffect(() => {
+  //   console.log('in expand effect: ');
+  //   const { children } = document.getElementById(`${props.taskID}subtasks`);
+  //   return !expandState ? changeHTMLDisplay(children, 'none') :
+  // changeHTMLDisplay(children, 'block');
+  // },
+  // [expandState]);
 
   function renderExpandButton() {
-    const display = (node.children.length > 0) ? 'inline-block' : 'none';
+    const display = (children.length > 0) ? 'inline-block' : 'none';
     return (
       <TaskButton
-        onClick={() => expandHandler()}
-        id={`${props.taskID}xb`}
-        background={expandState ? 'url(images/chevron-up.svg)' : 'url(images/chevron-down.svg)'}
+        onClick={() => expandNode(id)}
+        // id={`${node.taskID}xb`}
+        background={expanded ? 'url(images/chevron-up.svg)' : 'url(images/chevron-down.svg)'}
         display={display}
       />
     );
   }
 
+  function renderChildren() {
+    const display = (expanded && children.length > 0) ? 'flex' : 'none';
+    return <RenderTreeNode nodes={children} methods={methods} display={display} />;
+  }
+
   return (
-    <TaskContainer id={`${props.taskID}task`}>
+    <TaskContainer>
       <UIContainer>
-        <TaskCheckbox onClick={() => checkboxHandler()} background={checkState ? 'url(images/cross.svg)' : 'null'} />
-        <TaskTextbox checkState={checkState} />
+        <TaskCheckbox onClick={() => checkNode(id)} background={checked ? 'url(images/cross.svg)' : 'null'} />
+        <TaskTextbox checked={checked} />
         {renderExpandButton()}
-        <TaskButton onClick={() => addNode(node, setNode)} background="url(images/plus.svg)" />
-        <TaskButton onClick={() => deleteNode(props.node, props.setNode, props.i)} background="url(images/trash.svg)" />
+        <TaskButton onClick={() => addNode(id, path)} background="url(images/plus.svg)" />
+        <TaskButton onClick={() => deleteNode(id, parentID)} background="url(images/trash.svg)" />
         <Dragbox />
-        <TaskButton onClick={() => moveNode(props.node, props.setNode, props.i, 'up')} />
-        <TaskButton onClick={() => moveNode(props.node, props.setNode, props.i, 'down')} />
       </UIContainer>
-      <RenderTreeNode node={node} setNode={setNode} />
+      {renderChildren()}
     </TaskContainer>
   );
 }
 
 TaskTreeNode.defaultProps = {
-  props: null,
-  node: {
+  nodeData: {
+    path: null,
+    id: null,
+    parentID: null,
+    data: null,
     children: [],
+    expanded: false,
+    checked: false,
   },
-  setNode: null,
-  i: null,
-  taskID: null,
+  methods: {
+    addNode: null,
+  },
 };
 
 TaskTreeNode.propTypes = {
-  props: PropTypes.shape(),
-  node: PropTypes.shape({
-    children: PropTypes.arrayOf(PropTypes.number),
+  nodeData: PropTypes.shape({
+    path: PropTypes.string,
+    id: PropTypes.number,
+    parentID: PropTypes.number,
+    data: PropTypes.string,
+    children: PropTypes.arrayOf(PropTypes.object),
+    expanded: PropTypes.bool,
+    checked: PropTypes.bool,
   }),
-  setNode: PropTypes.func,
-  i: PropTypes.number,
-  taskID: PropTypes.number,
+  methods: PropTypes.shape({
+    addNode: PropTypes.func,
+    deleteNode: PropTypes.func,
+    checkNode: PropTypes.func,
+  }),
 };
 
 const TaskContainer = styled.div`

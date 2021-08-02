@@ -5,36 +5,30 @@ import PropTypes from 'prop-types';
 // eslint-disable-next-line import/no-cycle
 import TaskTreeNode from './TaskTreeNode';
 
-export default function RenderTreeNode({ node }) {
-  function mapElements(taskID, i) {
-    const props = {
-      node,
-      taskID,
-      i,
-    };
-    return <TaskTreeNode key={taskID} props={props} />;
-  }
-
+export default function RenderTreeNode({ nodes, methods, display }) {
   return (
-    <SubtaskContainer id={`${node.ID}subtasks`}>
-      {node.children.map((taskID, i) => mapElements(taskID, i))}
+    <SubtaskContainer display={display}>
+      {nodes.map((nodeData) => (
+        <TaskTreeNode nodeData={nodeData} key={nodeData.id} methods={methods} />
+      ))}
     </SubtaskContainer>
   );
 }
 
 RenderTreeNode.defaultProps = {
-  node: null,
+  nodes: [],
+  methods: null,
+  display: null,
 };
 
 RenderTreeNode.propTypes = {
-  node: PropTypes.shape({
-    children: PropTypes.arrayOf(PropTypes.number),
-    ID: PropTypes.number,
-  }),
+  nodes: PropTypes.arrayOf(PropTypes.object),
+  methods: PropTypes.objectOf(PropTypes.func),
+  display: PropTypes.string,
 };
 
 const SubtaskContainer = styled.div`
-  display: flex;
+  display: ${({ display }) => display || 'flex'};
 
   flex-direction: column-reverse;
 
