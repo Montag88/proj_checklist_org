@@ -11,38 +11,89 @@ export default class TaskTree extends Component {
   // CLEAN CODE OF ERRORS CONSTANTLY
 
   // NEXT
-  // double click to expand/collapse
-  // expand and collapse all (start at root and find all children recursively)
 
-  // does the entire tree rerender when root children is modified?
-  // path scheme, update on move
+  // TESTING
+  //  testing for components
+  // SERVER/DATABASE
+  //  data storage (tree, text, task order)
 
-  // textbox resize to fill to window
-  // textbox flex fill to content (vertically)
+  // MOVEMENT
+  //  path scheme, update on move
+  //  rearrangeable tasks by drag
+  //  change task depth (up/down), needs to carry children
+  //  highlight new location
 
-  // rearrangeable tasks by drag
-  // change task depth (up/down), needs to carry children
-
-  // testing for components
-  // data storage (tree, text, task order)
   // POLISH
+  //  optimize nodeID scheme
   //  trash wait to delete
-  //  task animations/polish/new double chevrons
+  //  task animations/new double chevrons
   //  light text editing
   //  ctrl z to undo deletes
+  //  hover text
+  //  fix sizing of elements
+  //  change color on hover
+
   // OPTIMIZE
+  //  does the entire tree rerender when root children is modified?
   //  convert svg to data URL
   //  gzip to compress svgs
   // HOST/docker/aws
+  //  google login
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.nodeIDs = new Set();
     this.state = {
-      children: [],
+      // children: [],
       depth: 0,
       path: '~/',
       id: -1,
+      children: [
+        {
+          id: 10,
+          expanded: true,
+          children: [
+            {
+              id: 40,
+              expanded: true,
+              children: [],
+            },
+            {
+              id: 50,
+              expanded: true,
+              children: [],
+            },
+          ],
+        },
+        { id: 20, expanded: true, children: [] },
+        {
+          id: 30,
+          expanded: true,
+          children: [
+            {
+              id: 60,
+              expanded: true,
+              children: [
+                {
+                  id: 80,
+                  expanded: true,
+                  children: [],
+                },
+                {
+                  id: 90,
+                  expanded: true,
+                  children: [],
+                },
+              ],
+            },
+            {
+              id: 70,
+              expanded: true,
+              children: [],
+            },
+          ],
+        },
+      ],
     };
     this.addNode = this.addNode.bind(this);
     this.deleteNode = this.deleteNode.bind(this);
@@ -50,10 +101,9 @@ export default class TaskTree extends Component {
     this.expandNode = this.expandNode.bind(this);
   }
 
-  // ***** LOCAL METHODS, NOT PART OF CONTEXT ***********
+  // ***** LOCAL METHODS ***********
   generateNodeID() {
-    // what is the best way to org these? ordered w/ timestamp?
-    // nodeIDs is set of existing IDs. nodeIDs just used for lookup of uniqueness of ids.
+    // nodeIDs is set of existing IDs. used for lookup of uniqueness of ids.
     // 0 - 9999
     const max = 100000;
     const newNodeID = Math.floor(Math.random() * max);
@@ -64,20 +114,16 @@ export default class TaskTree extends Component {
     return newNodeID;
   }
 
+  // createPath()
+
   // findNodePath() {}
 
-  // createPath()
-  // deleteNode(parent, parentDepth, index) {
-  //   console.log('in deleteNode');
-  //   this.setState(() => {});
-  // }
-
   findNodeBFS(targetID) {
+    let currNode;
     const queue = [];
-    // push root node to queue
     queue.push(this.state);
     while (queue.length > 0) {
-      const currNode = queue.shift();
+      currNode = queue.shift();
       if (currNode.id === targetID) {
         return currNode;
       }
@@ -106,18 +152,46 @@ export default class TaskTree extends Component {
     // return currNode.children.forEach((next) => this.findNodeDFS(targetID, next));
   }
 
-  // ***** PROPS METHODS ************
-  addNode(parentID, parentPath) {
-    console.log('in addNode, id: ', parentID, 'path: ', parentPath);
-    // Should accept the parent node/path/id
+  traverseAllNodes(property, value, node) {
+    const currNode = node || this.state;
+    currNode[property] = value;
+    if (currNode.children.length > 0) {
+      currNode.children.forEach((nextNode) => this.traverseAllNodes(property, value, nextNode));
+    }
+  }
+
+  toggleAllNodes(type) {
     this.setState(({ children }) => {
-      const parentNode = this.findNodeBFS(parentID);
+      let property;
+      let value;
+      switch (type) {
+        case 'expand':
+          property = 'expanded';
+          value = true;
+          break;
+        case 'collapse':
+          property = 'expanded';
+          value = false;
+          break;
+        default:
+          console.log('Error. Type: ', type, ' not recognized');
+      }
+      this.traverseAllNodes(property, value);
+      return { children };
+    });
+  }
+
+  // ***** PROPS METHODS ************
+  addNode(nodeID, nodePath) {
+    this.setState(({ children }) => {
+      console.log('in addNode');
+      const parentNode = this.findNodeBFS(nodeID);
       const nodeData = {
-        parentID,
-        path: `${parentPath}${parentNode.children.length}/`,
+        parentID: nodeID,
+        path: `${nodePath}${parentNode.children.length}/`,
         id: this.generateNodeID(),
       };
-      parentNode.children.push(new TreeNode(nodeData));
+      parentNode.children.unshift(new TreeNode(nodeData));
       parentNode.expanded = true;
       return { children };
     });
@@ -154,7 +228,6 @@ export default class TaskTree extends Component {
     });
   }
 
-  // create context for children and methods add/delete/move node, check/expand handlers
   render() {
     const { children, path, id } = this.state;
     const methods = {
@@ -167,6 +240,8 @@ export default class TaskTree extends Component {
       <Main>
         <UIContainer>
           <TaskButton onClick={() => this.addNode(id, path)} background="url(images/plus.svg)" />
+          <TaskButton text="Ex" onClick={() => this.toggleAllNodes('expand')} />
+          <TaskButton text="Co" onClick={() => this.toggleAllNodes('collapse')} />
         </UIContainer>
         <RenderTreeNode nodes={children} methods={methods} />
       </Main>
@@ -175,6 +250,7 @@ export default class TaskTree extends Component {
 }
 
 const UIContainer = styled.div`
+  height: 2em;
 `;
 
 const Main = styled.div`

@@ -38,13 +38,13 @@ export default function TaskTreeNode({ nodeData, methods }) {
   }
 
   function renderChildren() {
-    const display = (expanded && children.length > 0) ? 'flex' : 'none';
+    const display = (expanded && children.length > 0) ? 'block' : 'none';
     return <RenderTreeNode nodes={children} methods={methods} display={display} />;
   }
 
   return (
     <TaskContainer>
-      <UIContainer>
+      <UIContainer onDoubleClick={() => expandNode(id)}>
         <TaskCheckbox onClick={() => checkNode(id)} background={checked ? 'url(images/cross.svg)' : 'null'} />
         <TaskTextbox checked={checked} />
         {renderExpandButton()}
@@ -93,14 +93,17 @@ const TaskContainer = styled.div`
 `;
 
 const UIContainer = styled.div`
+  display: flex;
   white-space: nowrap;
 `;
 
 const Dragbox = styled.div`
   display: inline-block;
-
+  
   width: 1em;
   height: 1.5em;
+  
+  flex: none;
 
   background: url(images/menu-vertical.svg) no-repeat top left;
   background-position: top;
