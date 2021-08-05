@@ -18,9 +18,11 @@ TaskCheckbox.propTypes = {
 
 const Checkbox = styled.div`
   display: inline-block;
-
+  
   width: 1.5em;
   height: 1.5em;
+  
+  flex: none;
 
   border: 1px solid grey;
   margin: 0.1em;

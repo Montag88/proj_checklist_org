@@ -30,7 +30,7 @@ RenderTreeNode.propTypes = {
 const SubtaskContainer = styled.div`
   display: ${({ display }) => display || 'flex'};
 
-  flex-direction: column-reverse;
+  flex-flow: column nowrap;
 
   border: 1px dashed blue;
   border-radius: 4px;
