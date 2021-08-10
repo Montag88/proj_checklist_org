@@ -12,39 +12,52 @@ export default class TaskTree extends Component {
 
   // NEXT
 
+  // SERVER/DATABASE
+  //  post data to server
+  //  scheme mongodb
+  //  write to db
+  //  load from db on site load
+
   // TESTING
   //  testing for components
-  // SERVER/DATABASE
-  //  data storage (tree, text, task order)
 
-  // MOVEMENT
+  // TASK MOVEMENT
+  //  vector
   //  path scheme, update on move
   //  rearrangeable tasks by drag
   //  change task depth (up/down), needs to carry children
   //  highlight new location when dragging
 
   // POLISH
-  //  optimize nodeID scheme
-  //  trash wait to delete
-  //  task animations/new double chevrons
-  //  light text editing
-  //  ctrl z to undo deletes?
-  //  hover text on buttons
-  //  fix sizing of elements
   //  change color/highlight of tasks on hover
+  //  top menu sticky during scroll
+  //  trash wait to delete(animate fill)
+  //  new double chevrons(rotate double 45 to be vertical)
+  //  hover text on buttons, aria?
+  //  fix sizing of elements
+  //  light text editing, text color, bold, italicize, underline, crossout
+  //  ctrl z to undo deletes?
+  //  optimize nodeID scheme
 
   // OPTIMIZE
   //  does the entire tree rerender when root children is modified?
   //  convert svg to data URL
   //  gzip to compress svgs
   // HOST/docker/aws
-  //  google login
+  //  google login?
 
   constructor(props) {
     super(props);
     this.nodeIDs = new Set();
     // nodeText can be cleaned up by clearing keys with no value/empty str
     this.nodeText = {};
+    this.postData = {
+      timer: null,
+      pack: {
+        children: '',
+        nodeText: '',
+      },
+    };
     this.state = {
       // children: [],
       depth: 0,
@@ -102,6 +115,45 @@ export default class TaskTree extends Component {
     this.checkNode = this.checkNode.bind(this);
     this.expandNode = this.expandNode.bind(this);
     this.writeNodeText = this.writeNodeText.bind(this);
+    this.postDataMonitor = this.postDataMonitor.bind(this);
+  }
+
+  componentDidUpdate() {
+    // different triggers for state or nodetext changes
+    // text input triggers watchFunc
+    // state change triggers watchFunc through componentDidUpdate
+
+    // when watchFunc runs
+    // check root post timer for undefined
+    // if root post timer is num, do nothing
+    // else, deep compare root children and nodetext to previous
+    // if not equal
+    // start 30 sec timer, interval or timeout?
+    // at expiration, package children and nodetext
+    // post data to server/db
+    // repeat timer until data comparison is equal
+    // then stop timer and change root post timer to undefined
+  }
+
+  postDataMonitor() {
+    if (!this.postData.timer) {
+      console.log('timer is falsy');
+      this.postData.timer = setInterval(() => {
+        const currChildren = JSON.stringify(this.children);
+        const currNodeText = JSON.stringify(this.nodeText);
+        const compChildren = this.postData.pack.children !== currChildren;
+        const compNodeText = this.postData.pack.nodeText !== currNodeText;
+        console.log('compChild: ', compChildren, ' comptext: ', compNodeText);
+        if (compChildren || compNodeText) {
+          console.log('package and post data here');
+          this.postData.pack.children = currChildren;
+          this.postData.pack.nodeText = currNodeText;
+        } else {
+          clearInterval(this.postData.timer);
+          this.postData.timer = null;
+        }
+      }, 5000);
+    }
   }
 
   // ***** LOCAL METHODS ***********
@@ -234,12 +286,11 @@ export default class TaskTree extends Component {
   }
 
   writeNodeText(nodeID, text) {
-    console.log('in write node text');
     this.nodeText[nodeID] = text;
   }
 
   testFunc() {
-    console.log('node text is : ', this.nodeText);
+    this.postDataMonitor();
   }
 
   render() {
@@ -250,6 +301,7 @@ export default class TaskTree extends Component {
       checkNode: this.checkNode,
       expandNode: this.expandNode,
       writeNodeText: this.writeNodeText,
+      postDataMonitor: this.postDataMonitor,
     };
     return (
       <Main>

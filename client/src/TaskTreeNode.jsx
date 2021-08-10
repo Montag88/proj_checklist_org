@@ -24,15 +24,19 @@ export default function TaskTreeNode({ nodeData, methods }) {
     checkNode,
     expandNode,
     writeNodeText,
+    postDataMonitor,
   } = methods;
 
-  // on change to tree structure/state or text data
-  // start 1 min timer
-  // at end of timer, package node data and tree structure
-  // save node data package
-  // post data to server/db
-  // repeat every minute until new data package and stored package are the same
-  // stop timer and don't post data
+  function renderTextbox() {
+    return (
+      <TaskTextbox
+        id={id}
+        checked={checked}
+        writeNodeText={writeNodeText}
+        postDataMonitor={postDataMonitor}
+      />
+    );
+  }
 
   function renderExpandButton() {
     const display = (children.length > 0) ? 'inline-block' : 'none';
@@ -54,7 +58,7 @@ export default function TaskTreeNode({ nodeData, methods }) {
     <TaskContainer>
       <UIContainer onDoubleClick={() => expandNode(id)}>
         <TaskCheckbox onClick={() => checkNode(id)} background={checked ? 'url(images/cross.svg)' : 'null'} />
-        <TaskTextbox checked={checked} writeNodeText={writeNodeText} id={id} />
+        {renderTextbox()}
         {renderExpandButton()}
         <TaskButton onClick={() => addNode(id, path)} background="url(images/plus.svg)" />
         <TaskButton onClick={() => deleteNode(id, parentID)} background="url(images/trash.svg)" />
@@ -92,6 +96,7 @@ TaskTreeNode.propTypes = {
     checkNode: PropTypes.func,
     expandNode: PropTypes.func,
     writeNodeText: PropTypes.func,
+    postDataMonitor: PropTypes.func,
   }),
 };
 
