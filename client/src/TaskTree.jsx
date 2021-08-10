@@ -21,17 +21,17 @@ export default class TaskTree extends Component {
   //  path scheme, update on move
   //  rearrangeable tasks by drag
   //  change task depth (up/down), needs to carry children
-  //  highlight new location
+  //  highlight new location when dragging
 
   // POLISH
   //  optimize nodeID scheme
   //  trash wait to delete
   //  task animations/new double chevrons
   //  light text editing
-  //  ctrl z to undo deletes
-  //  hover text
+  //  ctrl z to undo deletes?
+  //  hover text on buttons
   //  fix sizing of elements
-  //  change color on hover
+  //  change color/highlight of tasks on hover
 
   // OPTIMIZE
   //  does the entire tree rerender when root children is modified?
@@ -43,6 +43,8 @@ export default class TaskTree extends Component {
   constructor(props) {
     super(props);
     this.nodeIDs = new Set();
+    // nodeText can be cleaned up by clearing keys with no value/empty str
+    this.nodeText = {};
     this.state = {
       // children: [],
       depth: 0,
@@ -99,6 +101,7 @@ export default class TaskTree extends Component {
     this.deleteNode = this.deleteNode.bind(this);
     this.checkNode = this.checkNode.bind(this);
     this.expandNode = this.expandNode.bind(this);
+    this.writeNodeText = this.writeNodeText.bind(this);
   }
 
   // ***** LOCAL METHODS ***********
@@ -134,23 +137,24 @@ export default class TaskTree extends Component {
     return false;
   }
 
-  findNodeDFS(targetID, node) {
-    console.log('in findNode');
-    const currNode = node || this.state;
-    if (currNode.id === targetID) {
-      console.log('target acquired');
-      return currNode;
-    }
-    // if currNode has no children
-
-    for (let i = 0; i < currNode.children.length; i += 1) {
-      console.log('looping i: ', i);
-      return this.findNodeDFS(targetID, currNode.children[i]);
-    }
-    return false;
-    // finds correct node and does not stop evaluating rest. similar to for loop w/o return
-    // return currNode.children.forEach((next) => this.findNodeDFS(targetID, next));
-  }
+  // findNodeDFS(targetID) {
+  // console.log('in findNode');
+  // let found = false;
+  // let currNode = this.state;
+  // while (currNode && !found) {
+  //   if (currNode.id === targetID) {
+  //     console.log('target acquired');
+  //     found = true;
+  //   }
+  //   for (let i = 0; i < currNode.children.length; i += 1) {
+  //     console.log('looping i: ', i);
+  //     return this.findNodeDFS(targetID, currNode.children[i]);
+  //   }
+  // }
+  // return currNode;
+  // finds correct node and does not stop evaluating rest. similar to for loop w/o return
+  // return currNode.children.forEach((next) => this.findNodeDFS(targetID, next));
+  // }
 
   traverseAllNodes(property, value, node) {
     const currNode = node || this.state;
@@ -199,6 +203,7 @@ export default class TaskTree extends Component {
 
   deleteNode(targetID, parentID) {
     // update paths of children
+    // delete node from nodeText
     // confirm before delete if children have data
     this.setState(({ children }) => {
       const parentNode = this.findNodeBFS(parentID);
@@ -228,6 +233,15 @@ export default class TaskTree extends Component {
     });
   }
 
+  writeNodeText(nodeID, text) {
+    console.log('in write node text');
+    this.nodeText[nodeID] = text;
+  }
+
+  testFunc() {
+    console.log('node text is : ', this.nodeText);
+  }
+
   render() {
     const { children, path, id } = this.state;
     const methods = {
@@ -235,6 +249,7 @@ export default class TaskTree extends Component {
       deleteNode: this.deleteNode,
       checkNode: this.checkNode,
       expandNode: this.expandNode,
+      writeNodeText: this.writeNodeText,
     };
     return (
       <Main>
@@ -242,6 +257,7 @@ export default class TaskTree extends Component {
           <TaskButton onClick={() => this.addNode(id, path)} background="url(images/plus.svg)" />
           <TaskButton text="Ex" onClick={() => this.toggleAllNodes('expand')} />
           <TaskButton text="Co" onClick={() => this.toggleAllNodes('collapse')} />
+          <TaskButton onClick={() => this.testFunc()} />
         </UIContainer>
         <RenderTreeNode nodes={children} methods={methods} />
       </Main>

@@ -2,21 +2,28 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-export default function TaskTextbox({ checked }) {
+export default function TaskTextbox({ checked, writeNodeText, id }) {
   const bcolor = checked ? 'grey' : 'white';
-  function handleInput(e) {
+
+  function handleChange(e) {
     e.target.style.height = 'auto';
     e.target.style.height = `${e.target.scrollHeight}px`;
+    writeNodeText(id, e.target.value);
   }
-  return <Textbox bcolor={bcolor} onInput={(e) => handleInput(e)} />;
+
+  return <Textbox bcolor={bcolor} onChange={(e) => handleChange(e)} />;
 }
 
 TaskTextbox.defaultProps = {
   checked: false,
+  writeNodeText: null,
+  id: null,
 };
 
 TaskTextbox.propTypes = {
   checked: PropTypes.bool,
+  writeNodeText: PropTypes.func,
+  id: PropTypes.number,
 };
 
 const Textbox = styled.textarea.attrs(() => ({

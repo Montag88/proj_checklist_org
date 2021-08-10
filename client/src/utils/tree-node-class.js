@@ -5,7 +5,6 @@ export default class TreeNode {
     this.id = id;
     this.parentID = parentID;
 
-    this.data = '';
     this.children = [];
     this.expanded = false;
     this.checked = false;
