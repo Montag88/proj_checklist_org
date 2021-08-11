@@ -14,10 +14,15 @@ export default class TaskTree extends Component {
   // NEXT
 
   // SERVER/DATABASE
-  //  post data to server
   //  scheme mongodb
+  //  seed db with data
+  //  get seed data from db on load
   //  write to db
   //  load from db on site load
+  //  how to not flash empty treenodes on site load?
+
+  // cleanup tree methods
+  // reduce the number of times BFS is called to find a node
 
   // TESTING
   //  testing for components
@@ -33,14 +38,16 @@ export default class TaskTree extends Component {
   //  change color/highlight of tasks on hover
   //  top menu sticky during scroll
   //  trash wait to delete(animate fill)
-  //  new double chevrons(rotate double 45 to be vertical)
+  //  new double chevrons(rotate double chev 45deg to be vertical)
   //  hover text on buttons, aria?
-  //  fix sizing of elements
-  //  light text editing, text color, bold, italicize, underline, crossout
-  //  ctrl z to undo deletes?
+  //  fix sizing of elements, textarea resizing
+  //  light text editing (text color, bold, italicize, underline, crossout)
+  //  light/dark color schemes
+  //  ctrl z to undo task deletes
   //  optimize nodeID scheme
 
   // OPTIMIZE
+  //  change tree to first child/next sibling binary tree
   //  does the entire tree rerender when root children is modified?
   //  convert svg to data URL
   //  gzip to compress svgs
@@ -50,101 +57,50 @@ export default class TaskTree extends Component {
   constructor(props) {
     super(props);
     this.nodeIDs = new Set();
-    // nodeText can be cleaned up by clearing keys with no value/empty str
-    this.nodeText = {};
-    this.postData = {
+    this.saveData = {
       timer: null,
-      pack: {
-        children: '',
-        nodeText: '',
-      },
+      data: '',
     };
     this.state = {
-      // children: [],
+      children: [],
       depth: 0,
       path: '~/',
       id: -1,
-      children: [
-        {
-          id: 10,
-          expanded: true,
-          children: [
-            {
-              id: 40,
-              expanded: true,
-              children: [],
-            },
-            {
-              id: 50,
-              expanded: true,
-              children: [],
-            },
-          ],
-        },
-        { id: 20, expanded: true, children: [] },
-        {
-          id: 30,
-          expanded: true,
-          children: [
-            {
-              id: 60,
-              expanded: true,
-              children: [
-                {
-                  id: 80,
-                  expanded: true,
-                  children: [],
-                },
-                {
-                  id: 90,
-                  expanded: true,
-                  children: [],
-                },
-              ],
-            },
-            {
-              id: 70,
-              expanded: true,
-              children: [],
-            },
-          ],
-        },
-      ],
     };
     this.addNode = this.addNode.bind(this);
     this.deleteNode = this.deleteNode.bind(this);
     this.checkNode = this.checkNode.bind(this);
     this.expandNode = this.expandNode.bind(this);
     this.writeNodeText = this.writeNodeText.bind(this);
-    this.postDataMonitor = this.postDataMonitor.bind(this);
+  }
+
+  componentDidMount() {
+    axios.get('/api/treedata')
+      .then((res) => {
+        this.setState(() => ({ children: res.data }));
+      })
+      .catch((err) => console.log(err));
   }
 
   // need to set initial pack on load, comp did mount
   componentDidUpdate() {
-    this.postDataMonitor();
+    console.log('tree updated');
+    this.saveDataMonitor();
   }
 
-  postDataMonitor() {
-    if (!this.postData.timer) {
+  saveDataMonitor() {
+    if (!this.saveData.timer) {
       const { children } = this.state;
-      this.postData.timer = setInterval(() => {
+      this.saveData.timer = setInterval(() => {
         const currChildren = JSON.stringify(children);
-        const currNodeText = JSON.stringify(this.nodeText);
-        const compChildren = this.postData.pack.children !== currChildren;
-        const compNodeText = this.postData.pack.nodeText !== currNodeText;
-        console.log('compChild: ', compChildren, ' comptext: ', compNodeText);
-        if (compChildren || compNodeText) {
-          const pack = {
-            children: currChildren,
-            nodeText: currNodeText,
-          };
-          axios.put('/api/treedata', pack)
+        if (this.saveData.data !== currChildren) {
+          this.saveData.data = currChildren;
+          axios.put('/api/treedata', this.saveData.data)
             .then((res) => console.log(res))
             .catch((err) => console.log(err));
-          this.postData.pack = pack;
         } else {
-          clearInterval(this.postData.timer);
-          this.postData.timer = null;
+          clearInterval(this.saveData.timer);
+          this.saveData.timer = null;
         }
       }, 5000);
     }
@@ -153,7 +109,7 @@ export default class TaskTree extends Component {
   // ***** LOCAL METHODS ***********
   generateNodeID() {
     // nodeIDs is set of existing IDs. used for lookup of uniqueness of ids.
-    // 0 - 9999
+    // 0 - 99999
     const max = 100000;
     const newNodeID = Math.floor(Math.random() * max);
     if (this.nodeIDs.has(newNodeID)) {
@@ -165,7 +121,7 @@ export default class TaskTree extends Component {
 
   // createPath()
 
-  // findNodePath() {}
+  // findNodePath()
 
   findNodeBFS(targetID) {
     let currNode;
@@ -249,7 +205,6 @@ export default class TaskTree extends Component {
 
   deleteNode(targetID, parentID) {
     // update paths of children
-    // delete node from nodeText
     // confirm before delete if children have data
     this.setState(({ children }) => {
       const parentNode = this.findNodeBFS(parentID);
@@ -280,11 +235,15 @@ export default class TaskTree extends Component {
   }
 
   writeNodeText(nodeID, text) {
-    this.nodeText[nodeID] = text;
+    this.setState(({ children }) => {
+      const node = this.findNodeBFS(nodeID);
+      node.data = text;
+      return { children };
+    });
   }
 
   testFunc() {
-    this.postDataMonitor();
+    this.saveDataMonitor();
   }
 
   render() {
@@ -295,7 +254,6 @@ export default class TaskTree extends Component {
       checkNode: this.checkNode,
       expandNode: this.expandNode,
       writeNodeText: this.writeNodeText,
-      postDataMonitor: this.postDataMonitor,
     };
     return (
       <Main>

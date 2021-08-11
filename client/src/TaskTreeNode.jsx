@@ -13,6 +13,7 @@ export default function TaskTreeNode({ nodeData, methods }) {
   const {
     path,
     id,
+    data,
     parentID,
     children,
     expanded,
@@ -24,16 +25,15 @@ export default function TaskTreeNode({ nodeData, methods }) {
     checkNode,
     expandNode,
     writeNodeText,
-    postDataMonitor,
   } = methods;
 
   function renderTextbox() {
     return (
       <TaskTextbox
         id={id}
+        data={data}
         checked={checked}
         writeNodeText={writeNodeText}
-        postDataMonitor={postDataMonitor}
       />
     );
   }
@@ -73,6 +73,7 @@ TaskTreeNode.defaultProps = {
   nodeData: {
     path: null,
     id: null,
+    data: '',
     parentID: null,
     children: [],
     expanded: false,
@@ -85,6 +86,7 @@ TaskTreeNode.propTypes = {
   nodeData: PropTypes.shape({
     path: PropTypes.string,
     id: PropTypes.number,
+    data: PropTypes.string,
     parentID: PropTypes.number,
     children: PropTypes.arrayOf(PropTypes.object),
     expanded: PropTypes.bool,
@@ -96,7 +98,6 @@ TaskTreeNode.propTypes = {
     checkNode: PropTypes.func,
     expandNode: PropTypes.func,
     writeNodeText: PropTypes.func,
-    postDataMonitor: PropTypes.func,
   }),
 };
 

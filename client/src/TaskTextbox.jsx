@@ -5,35 +5,40 @@ import styled from 'styled-components';
 export default function TaskTextbox(props) {
   const {
     id,
+    data,
     checked,
     writeNodeText,
-    postDataMonitor,
   } = props;
 
-  const bcolor = checked ? 'grey' : 'white';
+  const bgcolor = checked ? 'grey' : 'white';
 
   function handleChange(e) {
     e.target.style.height = 'auto';
     e.target.style.height = `${e.target.scrollHeight}px`;
     writeNodeText(id, e.target.value);
-    postDataMonitor();
   }
 
-  return <Textbox bcolor={bcolor} onChange={(e) => handleChange(e)} />;
+  return (
+    <Textbox
+      bgcolor={bgcolor}
+      value={data}
+      onChange={(e) => handleChange(e)}
+    />
+  );
 }
 
 TaskTextbox.defaultProps = {
   id: null,
+  data: '',
   checked: false,
   writeNodeText: null,
-  postDataMonitor: null,
 };
 
 TaskTextbox.propTypes = {
   id: PropTypes.number,
+  data: PropTypes.string,
   checked: PropTypes.bool,
   writeNodeText: PropTypes.func,
-  postDataMonitor: PropTypes.func,
 };
 
 const Textbox = styled.textarea.attrs(() => ({
@@ -55,7 +60,7 @@ const Textbox = styled.textarea.attrs(() => ({
   border: 1px solid grey;
   margin: 0.1em;
   
-  background-color: ${(props) => props.bcolor};
+  background-color: ${(props) => props.bgcolor};
   border-radius: 4px;
   
   font-family: "Roboto Mono", monospace;
