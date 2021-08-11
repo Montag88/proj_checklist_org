@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
 
 import TaskButton from './TaskButton';
 import RenderTreeNode from './RenderTreeNode';
@@ -118,36 +119,29 @@ export default class TaskTree extends Component {
     this.postDataMonitor = this.postDataMonitor.bind(this);
   }
 
+  // need to set initial pack on load, comp did mount
   componentDidUpdate() {
-    // different triggers for state or nodetext changes
-    // text input triggers watchFunc
-    // state change triggers watchFunc through componentDidUpdate
-
-    // when watchFunc runs
-    // check root post timer for undefined
-    // if root post timer is num, do nothing
-    // else, deep compare root children and nodetext to previous
-    // if not equal
-    // start 30 sec timer, interval or timeout?
-    // at expiration, package children and nodetext
-    // post data to server/db
-    // repeat timer until data comparison is equal
-    // then stop timer and change root post timer to undefined
+    this.postDataMonitor();
   }
 
   postDataMonitor() {
     if (!this.postData.timer) {
-      console.log('timer is falsy');
+      const { children } = this.state;
       this.postData.timer = setInterval(() => {
-        const currChildren = JSON.stringify(this.children);
+        const currChildren = JSON.stringify(children);
         const currNodeText = JSON.stringify(this.nodeText);
         const compChildren = this.postData.pack.children !== currChildren;
         const compNodeText = this.postData.pack.nodeText !== currNodeText;
         console.log('compChild: ', compChildren, ' comptext: ', compNodeText);
         if (compChildren || compNodeText) {
-          console.log('package and post data here');
-          this.postData.pack.children = currChildren;
-          this.postData.pack.nodeText = currNodeText;
+          const pack = {
+            children: currChildren,
+            nodeText: currNodeText,
+          };
+          axios.put('/api/treedata', pack)
+            .then((res) => console.log(res))
+            .catch((err) => console.log(err));
+          this.postData.pack = pack;
         } else {
           clearInterval(this.postData.timer);
           this.postData.timer = null;

@@ -40,6 +40,7 @@
     "webpack-cli": "^4.7.2"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "express": "^4.17.1",
     "path": "^0.12.7",
     "prop-types": "^15.7.2",
