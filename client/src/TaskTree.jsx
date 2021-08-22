@@ -20,6 +20,7 @@ export default class TaskTree extends Component {
   //  write to db
   //  load from db on site load
   //  how to not flash empty treenodes on site load?
+  // can set up userid as _id in db in future for performance
 
   // cleanup tree methods
   // reduce the number of times BFS is called to find a node
@@ -57,9 +58,9 @@ export default class TaskTree extends Component {
   constructor(props) {
     super(props);
     this.nodeIDs = new Set();
-    this.saveData = {
+    this.saveInfo = {
       timer: null,
-      data: '',
+      lastSave: '',
     };
     this.state = {
       children: [],
@@ -77,30 +78,34 @@ export default class TaskTree extends Component {
   componentDidMount() {
     axios.get('/api/treedata')
       .then((res) => {
-        this.setState(() => ({ children: res.data }));
+        console.log('RESPONSE FROM SERVER: ', res);
+        this.saveInfo.lastSave = res.data;
+        this.setState(() => {
+          const children = JSON.parse(res.data) || [];
+          return { children };
+        });
       })
       .catch((err) => console.log(err));
   }
 
   // need to set initial pack on load, comp did mount
   componentDidUpdate() {
-    console.log('tree updated');
     this.saveDataMonitor();
   }
 
   saveDataMonitor() {
-    if (!this.saveData.timer) {
+    if (!this.saveInfo.timer) {
       const { children } = this.state;
-      this.saveData.timer = setInterval(() => {
+      this.saveInfo.timer = setInterval(() => {
         const currChildren = JSON.stringify(children);
-        if (this.saveData.data !== currChildren) {
-          this.saveData.data = currChildren;
-          axios.put('/api/treedata', this.saveData.data)
+        if (this.saveInfo.lastSave !== currChildren) {
+          this.saveInfo.lastSave = currChildren;
+          axios.put('/api/treedata', { treeData: this.saveInfo.lastSave })
             .then((res) => console.log(res))
             .catch((err) => console.log(err));
         } else {
-          clearInterval(this.saveData.timer);
-          this.saveData.timer = null;
+          clearInterval(this.saveInfo.timer);
+          this.saveInfo.timer = null;
         }
       }, 5000);
     }
