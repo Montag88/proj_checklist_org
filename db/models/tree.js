@@ -6,6 +6,7 @@ mongoose.connect('mongodb://localhost:27017/test', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true,
+  useFindAndModify: false,
 }).catch((err) => console.log(err.reason)); // catches error only on initial connection
 
 const db = mongoose.connection;

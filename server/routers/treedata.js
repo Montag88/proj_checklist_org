@@ -5,27 +5,22 @@ const db = require('../../db/models/tree');
 
 const router = express.Router();
 
-// set up proper respose codes for errors and alerts for errors
-// set proper config for response to browser (put res config contains req body)
-
-// temp only
+// temp
 const userID = 1;
 
 router.route('/')
   .get((req, res) => {
     db.exportData(userID, (err, data) => {
-      if (err) res.status(401).send(err);
-      res.status(200).send(data.data);
+      if (err) res.status(400).send(err);
+      res.type('json').status(200).send(data.data);
     });
   })
   .put((req, res) => {
-    console.log('REQ FROM USER: ', req);
     const userData = JSON.stringify(req.body.treeData);
-    db.importData({ userID, userData }, (err, data) => {
+    db.importData({ userID, userData }, (err) => {
       console.log('ERR FROM DB: ', err);
-      console.log('DATA FROM DB: ', data);
-      if (err) res.status(401).send(err);
-      res.status(200).send();
+      if (err) res.status(400).send(err);
+      res.status(200).end();
     });
   });
 

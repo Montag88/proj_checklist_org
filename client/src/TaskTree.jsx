@@ -14,13 +14,8 @@ export default class TaskTree extends Component {
   // NEXT
 
   // SERVER/DATABASE
-  //  scheme mongodb
-  //  seed db with data
-  //  get seed data from db on load
-  //  write to db
-  //  load from db on site load
   //  how to not flash empty treenodes on site load?
-  // can set up userid as _id in db in future for performance
+  //  can set up userid as _id in db in future for performance
 
   // cleanup tree methods
   // reduce the number of times BFS is called to find a node
@@ -101,7 +96,7 @@ export default class TaskTree extends Component {
         if (this.saveInfo.lastSave !== currChildren) {
           this.saveInfo.lastSave = currChildren;
           axios.put('/api/treedata', { treeData: this.saveInfo.lastSave })
-            .then((res) => console.log(res))
+            // .then((res) => console.log(res))
             .catch((err) => console.log(err));
         } else {
           clearInterval(this.saveInfo.timer);
