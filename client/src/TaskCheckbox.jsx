@@ -2,18 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-export default function TaskCheckbox({ onClick, background }) {
-  return <Checkbox onClick={onClick} background={background} />;
+export default function TaskCheckbox({ onClick, bg }) {
+  return <Checkbox onClick={onClick} bg={bg} />;
 }
 
 TaskCheckbox.defaultProps = {
   onClick: null,
-  background: null,
+  bg: null,
 };
 
 TaskCheckbox.propTypes = {
   onClick: PropTypes.func,
-  background: PropTypes.string,
+  bg: PropTypes.string,
 };
 
 const Checkbox = styled.div`
@@ -27,7 +27,7 @@ const Checkbox = styled.div`
   border: 1px solid grey;
   margin: 0.1em;
 
-  background: ${({ background }) => background} no-repeat top left;
+  background: ${({ bg }) => bg} no-repeat top left;
   background-position: center;
   background-size: contain;
 

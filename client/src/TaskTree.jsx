@@ -15,10 +15,11 @@ export default class TaskTree extends Component {
 
   // SERVER/DATABASE
   //  how to not flash empty treenodes on site load?
-  //  can set up userid as _id in db in future for performance
+  //  set up userid as _id in db in future for performance
 
   // cleanup tree methods
   // reduce the number of times BFS is called to find a node
+  // task search
 
   // TESTING
   //  testing for components
@@ -32,9 +33,10 @@ export default class TaskTree extends Component {
 
   // POLISH
   //  change color/highlight of tasks on hover
+  //  cleanup dbl clikc to expand, area should not include textarea
+  //  re/store size of textareas on load/change
   //  top menu sticky during scroll
   //  trash wait to delete(animate fill)
-  //  new double chevrons(rotate double chev 45deg to be vertical)
   //  hover text on buttons, aria?
   //  fix sizing of elements, textarea resizing
   //  light text editing (text color, bold, italicize, underline, crossout)
@@ -257,19 +259,19 @@ export default class TaskTree extends Component {
     };
     return (
       <Main>
-        <UIContainer>
-          <TaskButton onClick={() => this.addNode(id, path)} background="url(images/plus.svg)" />
-          <TaskButton text="Ex" onClick={() => this.toggleAllNodes('expand')} />
-          <TaskButton text="Co" onClick={() => this.toggleAllNodes('collapse')} />
+        <MainMenu>
+          <TaskButton onClick={() => this.addNode(id, path)} bg="url(images/plus.svg)" />
+          <TaskButton onClick={() => this.toggleAllNodes('expand')} bg="url(images/dbl-chev-down.svg)" />
+          <TaskButton onClick={() => this.toggleAllNodes('collapse')} bg="url(images/dbl-chev-up.svg)" />
           <TaskButton onClick={() => this.testFunc()} />
-        </UIContainer>
+        </MainMenu>
         <RenderTreeNode nodes={children} methods={methods} />
       </Main>
     );
   }
 }
 
-const UIContainer = styled.div`
+const MainMenu = styled.div`
   height: 2em;
 `;
 

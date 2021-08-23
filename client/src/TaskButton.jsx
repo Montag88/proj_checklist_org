@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 export default function TaskButton({
-  onClick, background, id, display, text,
+  onClick, bg, id, display, text,
 }) {
   return (
-    <Button onClick={onClick} background={background} id={id} display={display}>
+    <Button onClick={onClick} bg={bg} id={id} display={display}>
       {text}
     </Button>
   );
@@ -14,7 +14,7 @@ export default function TaskButton({
 
 TaskButton.defaultProps = {
   onClick: null,
-  background: null,
+  bg: null,
   id: null,
   display: null,
   text: null,
@@ -22,7 +22,7 @@ TaskButton.defaultProps = {
 
 TaskButton.propTypes = {
   onClick: PropTypes.func,
-  background: PropTypes.string,
+  bg: PropTypes.string,
   id: PropTypes.string,
   display: PropTypes.string,
   text: PropTypes.string,
@@ -41,7 +41,7 @@ const Button = styled.div.attrs((props) => ({
   border: 1px solid grey;
   margin: 0.1em;
 
-  background: ${({ background }) => background} no-repeat top left;
+  background: ${({ bg }) => bg} no-repeat top left;
   background-position: center;
   background-size: 80%;
 

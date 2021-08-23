@@ -43,7 +43,7 @@ export default function TaskTreeNode({ nodeData, methods }) {
     return (
       <TaskButton
         onClick={() => expandNode(id)}
-        background={expanded ? 'url(images/chevron-up.svg)' : 'url(images/chevron-down.svg)'}
+        bg={expanded ? 'url(images/chevron-up.svg)' : 'url(images/chevron-down.svg)'}
         display={display}
       />
     );
@@ -57,11 +57,11 @@ export default function TaskTreeNode({ nodeData, methods }) {
   return (
     <TaskContainer>
       <UIContainer onDoubleClick={() => expandNode(id)}>
-        <TaskCheckbox onClick={() => checkNode(id)} background={checked ? 'url(images/cross.svg)' : 'null'} />
+        <TaskCheckbox onClick={() => checkNode(id)} bg={checked ? 'url(images/cross.svg)' : 'null'} />
         {renderTextbox()}
         {renderExpandButton()}
-        <TaskButton onClick={() => addNode(id, path)} background="url(images/plus.svg)" />
-        <TaskButton onClick={() => deleteNode(id, parentID)} background="url(images/trash.svg)" />
+        <TaskButton onClick={() => addNode(id, path)} bg="url(images/plus.svg)" />
+        <TaskButton onClick={() => deleteNode(id, parentID)} bg="url(images/trash.svg)" />
         <Dragbox />
       </UIContainer>
       {renderChildren()}
