@@ -13,8 +13,8 @@ export default function TaskTreeNode({ nodeData, methods }) {
   const {
     path,
     id,
+    data,
     parentID,
-    // data,
     children,
     expanded,
     checked,
@@ -24,7 +24,19 @@ export default function TaskTreeNode({ nodeData, methods }) {
     deleteNode,
     checkNode,
     expandNode,
+    writeNodeText,
   } = methods;
+
+  function renderTextbox() {
+    return (
+      <TaskTextbox
+        id={id}
+        data={data}
+        checked={checked}
+        writeNodeText={writeNodeText}
+      />
+    );
+  }
 
   function renderExpandButton() {
     const display = (children.length > 0) ? 'inline-block' : 'none';
@@ -46,7 +58,7 @@ export default function TaskTreeNode({ nodeData, methods }) {
     <TaskContainer>
       <UIContainer onDoubleClick={() => expandNode(id)}>
         <TaskCheckbox onClick={() => checkNode(id)} background={checked ? 'url(images/cross.svg)' : 'null'} />
-        <TaskTextbox checked={checked} />
+        {renderTextbox()}
         {renderExpandButton()}
         <TaskButton onClick={() => addNode(id, path)} background="url(images/plus.svg)" />
         <TaskButton onClick={() => deleteNode(id, parentID)} background="url(images/trash.svg)" />
@@ -61,8 +73,8 @@ TaskTreeNode.defaultProps = {
   nodeData: {
     path: null,
     id: null,
+    data: '',
     parentID: null,
-    data: null,
     children: [],
     expanded: false,
     checked: false,
@@ -74,8 +86,8 @@ TaskTreeNode.propTypes = {
   nodeData: PropTypes.shape({
     path: PropTypes.string,
     id: PropTypes.number,
-    parentID: PropTypes.number,
     data: PropTypes.string,
+    parentID: PropTypes.number,
     children: PropTypes.arrayOf(PropTypes.object),
     expanded: PropTypes.bool,
     checked: PropTypes.bool,
@@ -85,6 +97,7 @@ TaskTreeNode.propTypes = {
     deleteNode: PropTypes.func,
     checkNode: PropTypes.func,
     expandNode: PropTypes.func,
+    writeNodeText: PropTypes.func,
   }),
 };
 
@@ -102,7 +115,7 @@ const Dragbox = styled.div`
   
   width: 1em;
   height: 1.5em;
-  
+
   flex: none;
 
   background: url(images/menu-vertical.svg) no-repeat top left;

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
 
 import TaskButton from './TaskButton';
 import RenderTreeNode from './RenderTreeNode';
@@ -12,99 +13,103 @@ export default class TaskTree extends Component {
 
   // NEXT
 
+  // SERVER/DATABASE
+  //  how to not flash empty treenodes on site load?
+  //  can set up userid as _id in db in future for performance
+
+  // cleanup tree methods
+  // reduce the number of times BFS is called to find a node
+
   // TESTING
   //  testing for components
-  // SERVER/DATABASE
-  //  data storage (tree, text, task order)
 
-  // MOVEMENT
+  // TASK MOVEMENT
+  //  vector
   //  path scheme, update on move
   //  rearrangeable tasks by drag
   //  change task depth (up/down), needs to carry children
-  //  highlight new location
+  //  highlight new location when dragging
 
   // POLISH
+  //  change color/highlight of tasks on hover
+  //  top menu sticky during scroll
+  //  trash wait to delete(animate fill)
+  //  new double chevrons(rotate double chev 45deg to be vertical)
+  //  hover text on buttons, aria?
+  //  fix sizing of elements, textarea resizing
+  //  light text editing (text color, bold, italicize, underline, crossout)
+  //  light/dark color schemes
+  //  ctrl z to undo task deletes
   //  optimize nodeID scheme
-  //  trash wait to delete
-  //  task animations/new double chevrons
-  //  light text editing
-  //  ctrl z to undo deletes
-  //  hover text
-  //  fix sizing of elements
-  //  change color on hover
 
   // OPTIMIZE
+  //  change tree to first child/next sibling binary tree
   //  does the entire tree rerender when root children is modified?
   //  convert svg to data URL
   //  gzip to compress svgs
   // HOST/docker/aws
-  //  google login
+  //  google login?
 
   constructor(props) {
     super(props);
     this.nodeIDs = new Set();
+    this.saveInfo = {
+      timer: null,
+      lastSave: '',
+    };
     this.state = {
-      // children: [],
+      children: [],
       depth: 0,
       path: '~/',
       id: -1,
-      children: [
-        {
-          id: 10,
-          expanded: true,
-          children: [
-            {
-              id: 40,
-              expanded: true,
-              children: [],
-            },
-            {
-              id: 50,
-              expanded: true,
-              children: [],
-            },
-          ],
-        },
-        { id: 20, expanded: true, children: [] },
-        {
-          id: 30,
-          expanded: true,
-          children: [
-            {
-              id: 60,
-              expanded: true,
-              children: [
-                {
-                  id: 80,
-                  expanded: true,
-                  children: [],
-                },
-                {
-                  id: 90,
-                  expanded: true,
-                  children: [],
-                },
-              ],
-            },
-            {
-              id: 70,
-              expanded: true,
-              children: [],
-            },
-          ],
-        },
-      ],
     };
     this.addNode = this.addNode.bind(this);
     this.deleteNode = this.deleteNode.bind(this);
     this.checkNode = this.checkNode.bind(this);
     this.expandNode = this.expandNode.bind(this);
+    this.writeNodeText = this.writeNodeText.bind(this);
+  }
+
+  componentDidMount() {
+    axios.get('/api/treedata')
+      .then((res) => {
+        console.log('RESPONSE FROM SERVER: ', res);
+        this.saveInfo.lastSave = res.data;
+        this.setState(() => {
+          const children = JSON.parse(res.data) || [];
+          return { children };
+        });
+      })
+      .catch((err) => console.log(err));
+  }
+
+  // need to set initial pack on load, comp did mount
+  componentDidUpdate() {
+    this.saveDataMonitor();
+  }
+
+  saveDataMonitor() {
+    if (!this.saveInfo.timer) {
+      const { children } = this.state;
+      this.saveInfo.timer = setInterval(() => {
+        const currChildren = JSON.stringify(children);
+        if (this.saveInfo.lastSave !== currChildren) {
+          this.saveInfo.lastSave = currChildren;
+          axios.put('/api/treedata', { treeData: this.saveInfo.lastSave })
+            // .then((res) => console.log(res))
+            .catch((err) => console.log(err));
+        } else {
+          clearInterval(this.saveInfo.timer);
+          this.saveInfo.timer = null;
+        }
+      }, 5000);
+    }
   }
 
   // ***** LOCAL METHODS ***********
   generateNodeID() {
     // nodeIDs is set of existing IDs. used for lookup of uniqueness of ids.
-    // 0 - 9999
+    // 0 - 99999
     const max = 100000;
     const newNodeID = Math.floor(Math.random() * max);
     if (this.nodeIDs.has(newNodeID)) {
@@ -116,7 +121,7 @@ export default class TaskTree extends Component {
 
   // createPath()
 
-  // findNodePath() {}
+  // findNodePath()
 
   findNodeBFS(targetID) {
     let currNode;
@@ -134,23 +139,24 @@ export default class TaskTree extends Component {
     return false;
   }
 
-  findNodeDFS(targetID, node) {
-    console.log('in findNode');
-    const currNode = node || this.state;
-    if (currNode.id === targetID) {
-      console.log('target acquired');
-      return currNode;
-    }
-    // if currNode has no children
-
-    for (let i = 0; i < currNode.children.length; i += 1) {
-      console.log('looping i: ', i);
-      return this.findNodeDFS(targetID, currNode.children[i]);
-    }
-    return false;
-    // finds correct node and does not stop evaluating rest. similar to for loop w/o return
-    // return currNode.children.forEach((next) => this.findNodeDFS(targetID, next));
-  }
+  // findNodeDFS(targetID) {
+  // console.log('in findNode');
+  // let found = false;
+  // let currNode = this.state;
+  // while (currNode && !found) {
+  //   if (currNode.id === targetID) {
+  //     console.log('target acquired');
+  //     found = true;
+  //   }
+  //   for (let i = 0; i < currNode.children.length; i += 1) {
+  //     console.log('looping i: ', i);
+  //     return this.findNodeDFS(targetID, currNode.children[i]);
+  //   }
+  // }
+  // return currNode;
+  // finds correct node and does not stop evaluating rest. similar to for loop w/o return
+  // return currNode.children.forEach((next) => this.findNodeDFS(targetID, next));
+  // }
 
   traverseAllNodes(property, value, node) {
     const currNode = node || this.state;
@@ -228,6 +234,18 @@ export default class TaskTree extends Component {
     });
   }
 
+  writeNodeText(nodeID, text) {
+    this.setState(({ children }) => {
+      const node = this.findNodeBFS(nodeID);
+      node.data = text;
+      return { children };
+    });
+  }
+
+  testFunc() {
+    this.saveDataMonitor();
+  }
+
   render() {
     const { children, path, id } = this.state;
     const methods = {
@@ -235,6 +253,7 @@ export default class TaskTree extends Component {
       deleteNode: this.deleteNode,
       checkNode: this.checkNode,
       expandNode: this.expandNode,
+      writeNodeText: this.writeNodeText,
     };
     return (
       <Main>
@@ -242,6 +261,7 @@ export default class TaskTree extends Component {
           <TaskButton onClick={() => this.addNode(id, path)} background="url(images/plus.svg)" />
           <TaskButton text="Ex" onClick={() => this.toggleAllNodes('expand')} />
           <TaskButton text="Co" onClick={() => this.toggleAllNodes('collapse')} />
+          <TaskButton onClick={() => this.testFunc()} />
         </UIContainer>
         <RenderTreeNode nodes={children} methods={methods} />
       </Main>
