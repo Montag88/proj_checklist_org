@@ -8,13 +8,17 @@ export default function TaskTextbox(props) {
     data,
     checked,
     writeNodeText,
+    writeNodeHeight,
+    txtHeight,
   } = props;
 
   const bgcolor = checked ? 'grey' : 'white';
 
   function handleChange(e) {
+    const height = e.target.scrollHeight;
     e.target.style.height = 'auto';
-    e.target.style.height = `${e.target.scrollHeight}px`;
+    e.target.style.height = `${height}px`;
+    writeNodeHeight(id, height);
     writeNodeText(id, e.target.value);
   }
 
@@ -22,6 +26,7 @@ export default function TaskTextbox(props) {
     <Textbox
       bgcolor={bgcolor}
       value={data}
+      txtHeight={txtHeight}
       onChange={(e) => handleChange(e)}
     />
   );
@@ -32,6 +37,8 @@ TaskTextbox.defaultProps = {
   data: '',
   checked: false,
   writeNodeText: null,
+  writeNodeHeight: null,
+  txtHeight: 0,
 };
 
 TaskTextbox.propTypes = {
@@ -39,6 +46,8 @@ TaskTextbox.propTypes = {
   data: PropTypes.string,
   checked: PropTypes.bool,
   writeNodeText: PropTypes.func,
+  writeNodeHeight: PropTypes.func,
+  txtHeight: PropTypes.number,
 };
 
 const Textbox = styled.textarea.attrs(() => ({
@@ -51,12 +60,12 @@ const Textbox = styled.textarea.attrs(() => ({
   width: 10em;
   min-width: 10em;
   max-width: 20em;
-  height: 1.5em;
-  min-height: 1em;
+  height: ${(props) => props.txtHeight}px;
+  min-height: 2em;
   
+  box-sizing: border-box;
   flex: 1 1 5em;
   
-  padding: 0.2em;
   border: 1px solid grey;
   margin: 0.1em;
   
@@ -64,8 +73,9 @@ const Textbox = styled.textarea.attrs(() => ({
   border-radius: 4px;
   
   font-family: "Roboto Mono", monospace;
-  font-size: 1em;
+  font-size: .9em;
   overflow-y: hidden;
   resize: both;
   vertical-align: top;
+
 `;

@@ -9,5 +9,7 @@ export default class TreeNode {
     this.expanded = false;
     this.checked = false;
     this.children = [];
+
+    this.txtHeight = 0;
   }
 }

@@ -31,16 +31,21 @@ export default class TaskTree extends Component {
   //  change task depth (up/down), needs to carry children
   //  highlight new location when dragging
 
+  // TEXTAREA
+  //  size of text area is saved only on text input, need to save on user drag
+  //  text area auto resizing when deleting text with extra rows
+  //  resize text area  to fit text on window change
+  //  adjust height in increments of textsize
+  //  how does em relate to text size?
+
   // POLISH
-  //  change color/highlight of tasks on hover
-  //  cleanup dbl clikc to expand, area should not include textarea
-  //  re/store size of textareas on load/change
+  //  change color/highlight of tasks on hover (limit area of highlight)
   //  top menu sticky during scroll
-  //  trash wait to delete(animate fill)
-  //  hover text on buttons, aria?
-  //  fix sizing of elements, textarea resizing
-  //  light text editing (text color, bold, italicize, underline, crossout)
+  //  border around task and subtasks
   //  light/dark color schemes
+  //  trash wait to delete (animate fill)
+  //  hover text on buttons, aria?
+  //  light text editing (text color, bold, italicize, underline, crossout)
   //  ctrl z to undo task deletes
   //  optimize nodeID scheme
 
@@ -70,6 +75,7 @@ export default class TaskTree extends Component {
     this.checkNode = this.checkNode.bind(this);
     this.expandNode = this.expandNode.bind(this);
     this.writeNodeText = this.writeNodeText.bind(this);
+    this.writeNodeHeight = this.writeNodeHeight.bind(this);
   }
 
   componentDidMount() {
@@ -244,6 +250,14 @@ export default class TaskTree extends Component {
     });
   }
 
+  writeNodeHeight(nodeID, height) {
+    this.setState(({ children }) => {
+      const node = this.findNodeBFS(nodeID);
+      node.txtHeight = height;
+      return { children };
+    });
+  }
+
   testFunc() {
     this.saveDataMonitor();
   }
@@ -256,7 +270,9 @@ export default class TaskTree extends Component {
       checkNode: this.checkNode,
       expandNode: this.expandNode,
       writeNodeText: this.writeNodeText,
+      writeNodeHeight: this.writeNodeHeight,
     };
+
     return (
       <Main>
         <MainMenu>
@@ -273,21 +289,32 @@ export default class TaskTree extends Component {
 
 const MainMenu = styled.div`
   height: 2em;
+  padding-bottom: .3em;
 `;
 
 const Main = styled.div`
-  overflow: auto;
-
+  overflow: scroll;
+  
   width: 90%;
   min-width: 25%;
   max-width: 100%;
-
+  
   height: 90%;
   min-height: 25%;
   max-height: 100%;
-
+  
   border: 1px solid black;
   border-radius: 4px;
-
+  
   resize: auto;
+  scrollbar-gutter: stable;
+
+  ::-webkit-scrollbar {
+    width: 7px;
+  }
+    
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,.3);
+    border-radius: 4px;
+  }
 `;
