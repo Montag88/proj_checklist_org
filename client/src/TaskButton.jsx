@@ -39,13 +39,15 @@ const Button = styled.div.attrs((props) => ({
   box-sizing: border-box;
   flex: none;
   
-  border: 1px solid grey;
+  border: 2px solid ${(props) => props.theme.accent};
   margin: 0.1em;
 
   background: ${({ bg }) => bg} no-repeat top left;
-  background-color: white;
+  background-color: ${(props) => props.theme.bg};
   background-position: center;
   background-size: 80%;
 
-  border-radius: 4px;
+  border-radius: 6px;
+  
+  color: black;
 `;

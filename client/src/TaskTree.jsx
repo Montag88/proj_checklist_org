@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
+import styled, { ThemeProvider } from 'styled-components';
 import axios from 'axios';
 
 import TaskButton from './TaskButton';
@@ -20,6 +20,7 @@ export default class TaskTree extends Component {
   // cleanup tree methods
   // reduce the number of times BFS is called to find a node
   // task search
+  // split css out of jsx
 
   // TESTING
   //  testing for components
@@ -39,10 +40,9 @@ export default class TaskTree extends Component {
   //  how does em relate to text size?
 
   // POLISH
-  //  change color/highlight of tasks on hover (limit area of highlight)
-  //  top menu sticky during scroll
   //  border around task and subtasks
   //  light/dark color schemes
+  //  remove app styling and fix sizing/color
   //  trash wait to delete (animate fill)
   //  hover text on buttons, aria?
   //  light text editing (text color, bold, italicize, underline, crossout)
@@ -65,6 +65,7 @@ export default class TaskTree extends Component {
       lastSave: '',
     };
     this.state = {
+      theme: false,
       children: [],
       depth: 0,
       path: '~/',
@@ -262,8 +263,18 @@ export default class TaskTree extends Component {
     this.saveDataMonitor();
   }
 
+  toggleTheme() {
+    this.setState(({ theme }) => ({ theme: !theme }));
+  }
+
   render() {
-    const { children, path, id } = this.state;
+    const {
+      children,
+      path,
+      id,
+      theme,
+    } = this.state;
+
     const methods = {
       addNode: this.addNode,
       deleteNode: this.deleteNode,
@@ -273,26 +284,59 @@ export default class TaskTree extends Component {
       writeNodeHeight: this.writeNodeHeight,
     };
 
+    let currentTheme = {};
+    if (theme) {
+      currentTheme = {
+        bg: 'black',
+        accent: 'forestgreen',
+        text: 'white',
+        hover: 'darkgrey',
+        scrollbar: 'rgba(200,200,200,.3)',
+      };
+    } else {
+      currentTheme = {
+        bg: 'white',
+        accent: 'royalblue',
+        text: 'black',
+        hover: 'lightgrey',
+        scrollbar: 'rgba(0,0,0,.3)',
+      };
+    }
+
     return (
-      <Main>
-        <MainMenu>
-          <TaskButton onClick={() => this.addNode(id, path)} bg="url(images/plus.svg)" />
-          <TaskButton onClick={() => this.toggleAllNodes('expand')} bg="url(images/dbl-chev-down.svg)" />
-          <TaskButton onClick={() => this.toggleAllNodes('collapse')} bg="url(images/dbl-chev-up.svg)" />
-          <TaskButton onClick={() => this.testFunc()} />
-        </MainMenu>
-        <RenderTreeNode nodes={children} methods={methods} />
-      </Main>
+      <ThemeProvider theme={currentTheme}>
+        <Main>
+          <MainMenu>
+            <TaskButton onClick={() => this.addNode(id, path)} bg="url(images/plus.svg)" />
+            <TaskButton onClick={() => this.toggleAllNodes('expand')} bg="url(images/dbl-chev-down.svg)" />
+            <TaskButton onClick={() => this.toggleAllNodes('collapse')} bg="url(images/dbl-chev-up.svg)" />
+            <TaskButton onClick={() => this.toggleTheme()} />
+          </MainMenu>
+          <RenderTreeNode nodes={children} methods={methods} />
+        </Main>
+      </ThemeProvider>
     );
   }
 }
 
 const MainMenu = styled.div`
-  height: 2em;
-  padding-bottom: .3em;
+  position: fixed;
+  top: .1em;
+  left: .1em;
+
+  width: 90%;
+  height: fit-content;
+
+  box-sizing: border-box;
+  padding: .1em;
+  border: 2px solid ${(props) => props.theme.accent};
+  
+  background-color: ${(props) => props.theme.bg};
+  border-radius: 6px;
 `;
 
 const Main = styled.div`
+  display: inline-block;
   overflow: scroll;
   
   width: 90%;
@@ -302,19 +346,25 @@ const Main = styled.div`
   height: 90%;
   min-height: 25%;
   max-height: 100%;
-  
-  border: 1px solid black;
-  border-radius: 4px;
-  
+
+  box-sizing: border-box;
+
+  border: 2px solid ${(props) => props.theme.accent};
+  margin-top: 3em;
+  margin-left: .1em;
+
+  background-color: ${(props) => props.theme.bg};
+  border-radius: 6px;
   resize: auto;
   scrollbar-gutter: stable;
 
   ::-webkit-scrollbar {
     width: 7px;
+    height: 7px;
   }
     
   ::-webkit-scrollbar-thumb {
-    background-color: rgba(0,0,0,.3);
+    background-color: ${(props) => props.theme.scrollbar};
     border-radius: 4px;
   }
 `;

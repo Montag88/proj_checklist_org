@@ -12,8 +12,6 @@ export default function TaskTextbox(props) {
     txtHeight,
   } = props;
 
-  const bgcolor = checked ? 'grey' : 'white';
-
   function handleChange(e) {
     const height = e.target.scrollHeight;
     e.target.style.height = 'auto';
@@ -24,7 +22,7 @@ export default function TaskTextbox(props) {
 
   return (
     <Textbox
-      bgcolor={bgcolor}
+      checked={checked}
       value={data}
       txtHeight={txtHeight}
       onChange={(e) => handleChange(e)}
@@ -66,16 +64,19 @@ const Textbox = styled.textarea.attrs(() => ({
   box-sizing: border-box;
   flex: 1 1 5em;
   
-  border: 1px solid grey;
+  border: 2px solid ${(props) => props.theme.accent};
   margin: 0.1em;
   
-  background-color: ${(props) => props.bgcolor};
-  border-radius: 4px;
+  background-color: ${(props) => props.theme.bg};
+  border-radius: 6px;
   
+  color: ${(props) => props.theme.text};
   font-family: "Roboto Mono", monospace;
   font-size: .9em;
+  
   overflow-y: hidden;
   resize: both;
+  
+  text-decoration: ${(props) => (props.checked ? 'line-through' : 'none')};
   vertical-align: top;
-
 `;

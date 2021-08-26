@@ -119,22 +119,22 @@ TaskTreeNode.propTypes = {
 };
 
 const TaskContainer = styled.div`
-  margin: 0 0 0 2em;
-
+  border: 1px dotted black;
+  margin: .1em .1em .1em 2.1em;
+  
+  border-radius: 6px;
 `;
 
 const UIContainer = styled.div`
   display: flex;
   box-sizing: border-box;
   
-  border: 1px dotted black;
-  margin: .1em;
-  border-radius: 4px;
+  border-radius: 6px;
   
   white-space: nowrap;
 
   :hover {
-    background-color: chocolate;
+    background-color: ${(props) => props.theme.hover};
   }
 `;
 
