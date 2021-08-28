@@ -72,7 +72,6 @@ const Textbox = styled.textarea.attrs(() => ({
   
   color: ${(props) => props.theme.text};
   font-family: "Roboto Mono", monospace;
-  font-size: .9em;
   
   overflow-y: hidden;
   resize: both;

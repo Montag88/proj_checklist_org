@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import axios from 'axios';
 
-import TaskButton from './TaskButton';
 import RenderTreeNode from './RenderTreeNode';
-
 import TreeNode from './utils/tree-node-class';
+import TaskButton from './TaskButton';
+import ThemeSwitch from './ThemeSwitch';
 
 export default class TaskTree extends Component {
   // REMOVE AND SIMPLIFY ANY DUPLICATE CODE
@@ -41,8 +41,7 @@ export default class TaskTree extends Component {
 
   // POLISH
   //  border around task and subtasks
-  //  light/dark color schemes
-  //  remove app styling and fix sizing/color
+  //  light/dark color schemes for svg
   //  trash wait to delete (animate fill)
   //  hover text on buttons, aria?
   //  light text editing (text color, bold, italicize, underline, crossout)
@@ -65,8 +64,8 @@ export default class TaskTree extends Component {
       lastSave: '',
     };
     this.state = {
-      theme: false,
       children: [],
+      theme: 'light',
       depth: 0,
       path: '~/',
       id: -1,
@@ -77,6 +76,7 @@ export default class TaskTree extends Component {
     this.expandNode = this.expandNode.bind(this);
     this.writeNodeText = this.writeNodeText.bind(this);
     this.writeNodeHeight = this.writeNodeHeight.bind(this);
+    this.toggleTheme = this.toggleTheme.bind(this);
   }
 
   componentDidMount() {
@@ -259,12 +259,8 @@ export default class TaskTree extends Component {
     });
   }
 
-  testFunc() {
-    this.saveDataMonitor();
-  }
-
-  toggleTheme() {
-    this.setState(({ theme }) => ({ theme: !theme }));
+  toggleTheme(color) {
+    this.setState(() => ({ theme: color }));
   }
 
   render() {
@@ -285,46 +281,61 @@ export default class TaskTree extends Component {
     };
 
     let currentTheme = {};
-    if (theme) {
-      currentTheme = {
-        bg: 'black',
-        accent: 'forestgreen',
-        text: 'white',
-        hover: 'darkgrey',
-        scrollbar: 'rgba(200,200,200,.3)',
-      };
-    } else {
-      currentTheme = {
-        bg: 'white',
-        accent: 'royalblue',
-        text: 'black',
-        hover: 'lightgrey',
-        scrollbar: 'rgba(0,0,0,.3)',
-      };
+    switch (theme) {
+      case 'light':
+        currentTheme = {
+          bg: 'white',
+          accent: 'royalblue',
+          text: 'black',
+          hover: 'lightgrey',
+          scrollbar: 'rgba(0,0,0,.3)',
+          svg: 'black',
+        };
+        break;
+      case 'dark':
+        currentTheme = {
+          bg: 'black',
+          accent: 'forestgreen',
+          text: 'white',
+          hover: 'darkgrey',
+          scrollbar: 'rgba(200,200,200,.3)',
+          svg: 'gold',
+        };
+        break;
+      default:
+        console.log('theme not recognized');
     }
 
     return (
       <ThemeProvider theme={currentTheme}>
-        <Main>
-          <MainMenu>
-            <TaskButton onClick={() => this.addNode(id, path)} bg="url(images/plus.svg)" />
-            <TaskButton onClick={() => this.toggleAllNodes('expand')} bg="url(images/dbl-chev-down.svg)" />
-            <TaskButton onClick={() => this.toggleAllNodes('collapse')} bg="url(images/dbl-chev-up.svg)" />
-            <TaskButton onClick={() => this.toggleTheme()} />
-          </MainMenu>
-          <RenderTreeNode nodes={children} methods={methods} />
-        </Main>
+        <Window>
+          <Main>
+            <MainMenu>
+              <TaskButton onClick={() => this.addNode(id, path)} bg="url(images/plus.svg)" />
+              <TaskButton onClick={() => this.toggleAllNodes('expand')} bg="url(images/dbl-chev-down.svg)" />
+              <TaskButton onClick={() => this.toggleAllNodes('collapse')} bg="url(images/dbl-chev-up.svg)" />
+              <ThemeSwitch theme={theme} toggleTheme={this.toggleTheme} />
+            </MainMenu>
+            <RenderTreeNode nodes={children} methods={methods} />
+          </Main>
+        </Window>
       </ThemeProvider>
     );
   }
 }
 
+const Window = styled.div`
+  width: 100vw;
+  height: 100vh;
+  background-color: ${(props) => props.theme.bg};
+`;
+
 const MainMenu = styled.div`
   position: fixed;
-  top: .1em;
-  left: .1em;
+  top: .3em;
+  left: .3em;
 
-  width: 90%;
+  width: 95%;
   height: fit-content;
 
   box-sizing: border-box;
@@ -339,23 +350,18 @@ const Main = styled.div`
   display: inline-block;
   overflow: scroll;
   
-  width: 90%;
-  min-width: 25%;
-  max-width: 100%;
-  
+  width: 95%;
   height: 90%;
-  min-height: 25%;
-  max-height: 100%;
 
   box-sizing: border-box;
 
   border: 2px solid ${(props) => props.theme.accent};
-  margin-top: 3em;
-  margin-left: .1em;
+  margin-top: 3.2em;
+  margin-right: .3em;
+  margin-left: .3em;
 
   background-color: ${(props) => props.theme.bg};
   border-radius: 6px;
-  resize: auto;
   scrollbar-gutter: stable;
 
   ::-webkit-scrollbar {
@@ -366,5 +372,9 @@ const Main = styled.div`
   ::-webkit-scrollbar-thumb {
     background-color: ${(props) => props.theme.scrollbar};
     border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-corner {
+    background-color: ${(props) => props.theme.scrollbar};
   }
 `;
