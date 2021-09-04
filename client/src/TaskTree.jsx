@@ -11,24 +11,15 @@ export default class TaskTree extends Component {
   // REMOVE AND SIMPLIFY ANY DUPLICATE CODE
   // CLEAN CODE OF ERRORS CONSTANTLY
 
-  // NEXT
-
-  // SERVER/DATABASE
-  //  how to not flash empty treenodes on site load?
-  //  set up userid as _id in db in future for performance
-
-  // cleanup tree methods
-  // reduce the number of times BFS is called to find a node
-  // task search
-  // split css out of jsx
-
-  // TESTING
-  //  testing for components
+  // TO DO
+  // Drag and Drop interface
+  // Develop some React testing
+  // Task Search
+  // Full AWS hosting with Docker
+  // SVG color change for theme
 
   // TASK MOVEMENT
-  //  vector
   //  path scheme, update on move
-  //  rearrangeable tasks by drag
   //  change task depth (up/down), needs to carry children
   //  highlight new location when dragging
 
@@ -40,21 +31,28 @@ export default class TaskTree extends Component {
   //  how does em relate to text size?
 
   // POLISH
+  //  not flash empty treenodes on site load (show loading animation instead)
   //  border around task and subtasks
-  //  light/dark color schemes for svg
   //  trash wait to delete (animate fill)
   //  hover text on buttons, aria?
-  //  light text editing (text color, bold, italicize, underline, crossout)
   //  ctrl z to undo task deletes
-  //  optimize nodeID scheme
+  //  develop nodeID scheme
 
-  // OPTIMIZE
-  //  change tree to first child/next sibling binary tree
+  // OPTIMIZE/CLEANUP
+  // cleanup tree methods
+  // reduce the number of times BFS is called to find a node
+  // split css out of jsx
   //  does the entire tree rerender when root children is modified?
   //  convert svg to data URL
-  //  gzip to compress svgs
-  // HOST/docker/aws
-  //  google login?
+  //  gzip
+
+  // FUTURE
+  // editing timestamps
+  // light text editing (text color, bold, italicize, underline, crossout)
+  // change tree to first child/next sibling binary tree
+  // google login?
+  // vector path to find node
+  // set up userid as _id in DB in future for performance
 
   constructor(props) {
     super(props);
