@@ -18,14 +18,26 @@ export default function TaskTreeNode({ nodeData, methods }) {
     children,
     expanded,
     checked,
+    txtHeight,
   } = nodeData;
+
   const {
     addNode,
     deleteNode,
     checkNode,
     expandNode,
     writeNodeText,
+    writeNodeHeight,
   } = methods;
+
+  const nodeClass = 'NodeCont';
+
+  function handleDoubleClick(e) {
+    if (!e.target.className.includes(nodeClass)) {
+      return;
+    }
+    expandNode(id);
+  }
 
   function renderTextbox() {
     return (
@@ -34,6 +46,8 @@ export default function TaskTreeNode({ nodeData, methods }) {
         data={data}
         checked={checked}
         writeNodeText={writeNodeText}
+        writeNodeHeight={writeNodeHeight}
+        txtHeight={txtHeight}
       />
     );
   }
@@ -43,7 +57,7 @@ export default function TaskTreeNode({ nodeData, methods }) {
     return (
       <TaskButton
         onClick={() => expandNode(id)}
-        background={expanded ? 'url(images/chevron-up.svg)' : 'url(images/chevron-down.svg)'}
+        bg={expanded ? 'url(images/chevron-up.svg)' : 'url(images/chevron-down.svg)'}
         display={display}
       />
     );
@@ -56,13 +70,13 @@ export default function TaskTreeNode({ nodeData, methods }) {
 
   return (
     <TaskContainer>
-      <UIContainer onDoubleClick={() => expandNode(id)}>
-        <TaskCheckbox onClick={() => checkNode(id)} background={checked ? 'url(images/cross.svg)' : 'null'} />
+      <UIContainer onDoubleClick={(e) => handleDoubleClick(e)} className={nodeClass}>
+        <Dragbox />
+        <TaskCheckbox onClick={() => checkNode(id)} bg={checked ? 'url(images/cross.svg)' : 'null'} />
         {renderTextbox()}
         {renderExpandButton()}
-        <TaskButton onClick={() => addNode(id, path)} background="url(images/plus.svg)" />
-        <TaskButton onClick={() => deleteNode(id, parentID)} background="url(images/trash.svg)" />
-        <Dragbox />
+        <TaskButton onClick={() => addNode(id, path)} bg="url(images/plus.svg)" />
+        <TaskButton onClick={() => deleteNode(id, parentID)} bg="url(images/trash.svg)" />
       </UIContainer>
       {renderChildren()}
     </TaskContainer>
@@ -78,6 +92,7 @@ TaskTreeNode.defaultProps = {
     children: [],
     expanded: false,
     checked: false,
+    txtHeight: 0,
   },
   methods: {},
 };
@@ -91,6 +106,7 @@ TaskTreeNode.propTypes = {
     children: PropTypes.arrayOf(PropTypes.object),
     expanded: PropTypes.bool,
     checked: PropTypes.bool,
+    txtHeight: PropTypes.number,
   }),
   methods: PropTypes.shape({
     addNode: PropTypes.func,
@@ -98,25 +114,39 @@ TaskTreeNode.propTypes = {
     checkNode: PropTypes.func,
     expandNode: PropTypes.func,
     writeNodeText: PropTypes.func,
+    writeNodeHeight: PropTypes.func,
   }),
 };
 
 const TaskContainer = styled.div`
-  margin: 0 0 0 2em;
+  border: 1px dotted black;
+  margin: .1em .1em .1em 2.1em;
+  
+  border-radius: 6px;
 `;
 
 const UIContainer = styled.div`
   display: flex;
+  box-sizing: border-box;
+  
+  border-radius: 6px;
+  
   white-space: nowrap;
+
+  :hover {
+    background-color: ${(props) => props.theme.hover};
+  }
 `;
 
 const Dragbox = styled.div`
   display: inline-block;
   
-  width: 1em;
-  height: 1.5em;
-
+  width: 1.8em;
+  height: 1.8em;
+  
+  box-sizing: border-box;
   flex: none;
+  margin: 0.1em;
 
   background: url(images/menu-vertical.svg) no-repeat top left;
   background-position: top;

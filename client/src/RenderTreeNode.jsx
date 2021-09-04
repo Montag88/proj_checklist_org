@@ -32,6 +32,5 @@ const SubtaskContainer = styled.div`
 
   flex-flow: column nowrap;
 
-  border: 1px dashed blue;
-  border-radius: 4px;
+  border-radius: 6px;
 `;

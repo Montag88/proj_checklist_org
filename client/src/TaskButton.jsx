@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 export default function TaskButton({
-  onClick, background, id, display, text,
+  onClick, bg, id, display, text,
 }) {
   return (
-    <Button onClick={onClick} background={background} id={id} display={display}>
+    <Button onClick={onClick} bg={bg} id={id} display={display}>
       {text}
     </Button>
   );
@@ -14,7 +14,7 @@ export default function TaskButton({
 
 TaskButton.defaultProps = {
   onClick: null,
-  background: null,
+  bg: null,
   id: null,
   display: null,
   text: null,
@@ -22,7 +22,7 @@ TaskButton.defaultProps = {
 
 TaskButton.propTypes = {
   onClick: PropTypes.func,
-  background: PropTypes.string,
+  bg: PropTypes.string,
   id: PropTypes.string,
   display: PropTypes.string,
   text: PropTypes.string,
@@ -33,17 +33,21 @@ const Button = styled.div.attrs((props) => ({
 }))`
   display: ${({ display }) => (display || 'inline-block')};
   
-  width: 1.5em;
-  height: 1.5em;
+  width: 1.8em;
+  height: 1.8em;
   
+  box-sizing: border-box;
   flex: none;
   
-  border: 1px solid grey;
+  border: 2px solid ${(props) => props.theme.accent};
   margin: 0.1em;
 
-  background: ${({ background }) => background} no-repeat top left;
+  background: ${({ bg }) => bg} no-repeat top left;
+  background-color: ${(props) => props.theme.bg};
   background-position: center;
   background-size: 80%;
 
-  border-radius: 4px;
+  border-radius: 6px;
+  
+  color: black;
 `;

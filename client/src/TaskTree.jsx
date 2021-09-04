@@ -1,54 +1,58 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
+import styled, { ThemeProvider } from 'styled-components';
 import axios from 'axios';
 
-import TaskButton from './TaskButton';
 import RenderTreeNode from './RenderTreeNode';
-
 import TreeNode from './utils/tree-node-class';
+import TaskButton from './TaskButton';
+import ThemeSwitch from './ThemeSwitch';
 
 export default class TaskTree extends Component {
   // REMOVE AND SIMPLIFY ANY DUPLICATE CODE
   // CLEAN CODE OF ERRORS CONSTANTLY
 
-  // NEXT
-
-  // SERVER/DATABASE
-  //  how to not flash empty treenodes on site load?
-  //  can set up userid as _id in db in future for performance
-
-  // cleanup tree methods
-  // reduce the number of times BFS is called to find a node
-
-  // TESTING
-  //  testing for components
+  // TO DO
+  // Drag and Drop interface
+  // Develop some React testing
+  // Task Search
+  // Full AWS hosting with Docker
+  // SVG color change for theme
 
   // TASK MOVEMENT
-  //  vector
   //  path scheme, update on move
-  //  rearrangeable tasks by drag
   //  change task depth (up/down), needs to carry children
   //  highlight new location when dragging
 
-  // POLISH
-  //  change color/highlight of tasks on hover
-  //  top menu sticky during scroll
-  //  trash wait to delete(animate fill)
-  //  new double chevrons(rotate double chev 45deg to be vertical)
-  //  hover text on buttons, aria?
-  //  fix sizing of elements, textarea resizing
-  //  light text editing (text color, bold, italicize, underline, crossout)
-  //  light/dark color schemes
-  //  ctrl z to undo task deletes
-  //  optimize nodeID scheme
+  // TEXTAREA
+  //  size of text area is saved only on text input, need to save on user drag
+  //  text area auto resizing when deleting text with extra rows
+  //  resize text area  to fit text on window change
+  //  adjust height in increments of textsize
+  //  how does em relate to text size?
 
-  // OPTIMIZE
-  //  change tree to first child/next sibling binary tree
+  // POLISH
+  //  not flash empty treenodes on site load (show loading animation instead)
+  //  border around task and subtasks
+  //  trash wait to delete (animate fill)
+  //  hover text on buttons, aria?
+  //  ctrl z to undo task deletes
+  //  develop nodeID scheme
+
+  // OPTIMIZE/CLEANUP
+  // cleanup tree methods
+  // reduce the number of times BFS is called to find a node
+  // split css out of jsx
   //  does the entire tree rerender when root children is modified?
   //  convert svg to data URL
-  //  gzip to compress svgs
-  // HOST/docker/aws
-  //  google login?
+  //  gzip
+
+  // FUTURE
+  // editing timestamps
+  // light text editing (text color, bold, italicize, underline, crossout)
+  // change tree to first child/next sibling binary tree
+  // google login?
+  // vector path to find node
+  // set up userid as _id in DB in future for performance
 
   constructor(props) {
     super(props);
@@ -59,6 +63,7 @@ export default class TaskTree extends Component {
     };
     this.state = {
       children: [],
+      theme: 'light',
       depth: 0,
       path: '~/',
       id: -1,
@@ -68,6 +73,8 @@ export default class TaskTree extends Component {
     this.checkNode = this.checkNode.bind(this);
     this.expandNode = this.expandNode.bind(this);
     this.writeNodeText = this.writeNodeText.bind(this);
+    this.writeNodeHeight = this.writeNodeHeight.bind(this);
+    this.toggleTheme = this.toggleTheme.bind(this);
   }
 
   componentDidMount() {
@@ -242,50 +249,130 @@ export default class TaskTree extends Component {
     });
   }
 
-  testFunc() {
-    this.saveDataMonitor();
+  writeNodeHeight(nodeID, height) {
+    this.setState(({ children }) => {
+      const node = this.findNodeBFS(nodeID);
+      node.txtHeight = height;
+      return { children };
+    });
+  }
+
+  toggleTheme(color) {
+    this.setState(() => ({ theme: color }));
   }
 
   render() {
-    const { children, path, id } = this.state;
+    const {
+      children,
+      path,
+      id,
+      theme,
+    } = this.state;
+
     const methods = {
       addNode: this.addNode,
       deleteNode: this.deleteNode,
       checkNode: this.checkNode,
       expandNode: this.expandNode,
       writeNodeText: this.writeNodeText,
+      writeNodeHeight: this.writeNodeHeight,
     };
+
+    let currentTheme = {};
+    switch (theme) {
+      case 'light':
+        currentTheme = {
+          bg: 'white',
+          accent: 'royalblue',
+          text: 'black',
+          hover: 'lightgrey',
+          scrollbar: 'rgba(0,0,0,.3)',
+          svg: 'black',
+        };
+        break;
+      case 'dark':
+        currentTheme = {
+          bg: 'black',
+          accent: 'forestgreen',
+          text: 'white',
+          hover: 'darkgrey',
+          scrollbar: 'rgba(200,200,200,.3)',
+          svg: 'gold',
+        };
+        break;
+      default:
+        console.log('theme not recognized');
+    }
+
     return (
-      <Main>
-        <UIContainer>
-          <TaskButton onClick={() => this.addNode(id, path)} background="url(images/plus.svg)" />
-          <TaskButton text="Ex" onClick={() => this.toggleAllNodes('expand')} />
-          <TaskButton text="Co" onClick={() => this.toggleAllNodes('collapse')} />
-          <TaskButton onClick={() => this.testFunc()} />
-        </UIContainer>
-        <RenderTreeNode nodes={children} methods={methods} />
-      </Main>
+      <ThemeProvider theme={currentTheme}>
+        <Window>
+          <Main>
+            <MainMenu>
+              <TaskButton onClick={() => this.addNode(id, path)} bg="url(images/plus.svg)" />
+              <TaskButton onClick={() => this.toggleAllNodes('expand')} bg="url(images/dbl-chev-down.svg)" />
+              <TaskButton onClick={() => this.toggleAllNodes('collapse')} bg="url(images/dbl-chev-up.svg)" />
+              <ThemeSwitch theme={theme} toggleTheme={this.toggleTheme} />
+            </MainMenu>
+            <RenderTreeNode nodes={children} methods={methods} />
+          </Main>
+        </Window>
+      </ThemeProvider>
     );
   }
 }
 
-const UIContainer = styled.div`
-  height: 2em;
+const Window = styled.div`
+  width: 100vw;
+  height: 100vh;
+  background-color: ${(props) => props.theme.bg};
+`;
+
+const MainMenu = styled.div`
+  position: fixed;
+  top: .3em;
+  left: .3em;
+
+  width: 95%;
+  height: fit-content;
+
+  box-sizing: border-box;
+  padding: .1em;
+  border: 2px solid ${(props) => props.theme.accent};
+  
+  background-color: ${(props) => props.theme.bg};
+  border-radius: 6px;
 `;
 
 const Main = styled.div`
-  overflow: auto;
-
-  width: 90%;
-  min-width: 25%;
-  max-width: 100%;
-
+  display: inline-block;
+  overflow: scroll;
+  
+  width: 95%;
   height: 90%;
-  min-height: 25%;
-  max-height: 100%;
 
-  border: 1px solid black;
-  border-radius: 4px;
+  box-sizing: border-box;
 
-  resize: auto;
+  border: 2px solid ${(props) => props.theme.accent};
+  margin-top: 3.2em;
+  margin-right: .3em;
+  margin-left: .3em;
+
+  background-color: ${(props) => props.theme.bg};
+  border-radius: 6px;
+  scrollbar-gutter: stable;
+
+  ::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+  }
+    
+  ::-webkit-scrollbar-thumb {
+    background-color: ${(props) => props.theme.scrollbar};
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-corner {
+    background-color: ${(props) => props.theme.scrollbar};
+  }
 `;
