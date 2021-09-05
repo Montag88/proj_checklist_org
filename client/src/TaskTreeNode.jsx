@@ -119,7 +119,7 @@ TaskTreeNode.propTypes = {
 };
 
 const TaskContainer = styled.div`
-  border: 1px dotted black;
+  border: 1px dotted blue;
   margin: .1em .1em .1em 2.1em;
   
   border-radius: 6px;

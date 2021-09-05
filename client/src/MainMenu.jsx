@@ -34,16 +34,16 @@ MainMenu.defaultProps = {
 };
 
 MainMenu.propTypes = {
-  methods: {
+  methods: PropTypes.shape({
     addNode: PropTypes.func,
     toggleAllNodes: PropTypes.func,
     toggleTheme: PropTypes.func,
-  },
-  data: {
+  }),
+  data: PropTypes.shape({
     id: PropTypes.number,
     theme: PropTypes.string,
     path: PropTypes.string,
-  },
+  }),
 };
 
 const MenuContainer = styled.div`

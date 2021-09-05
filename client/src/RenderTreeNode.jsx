@@ -7,11 +7,15 @@ import TaskTreeNode from './TaskTreeNode';
 
 export default function RenderTreeNode({ nodes, methods, display }) {
   return (
-    <SubtaskContainer display={display}>
-      {nodes.map((nodeData) => (
-        <TaskTreeNode nodeData={nodeData} key={nodeData.id} methods={methods} />
-      ))}
-    </SubtaskContainer>
+    <>
+      <SubtaskContainer display={display}>
+        <TestCont />
+        {nodes.map((nodeData) => (
+          <TaskTreeNode nodeData={nodeData} key={nodeData.id} methods={methods} />
+        ))}
+      </SubtaskContainer>
+      <TestCont />
+    </>
   );
 }
 
@@ -33,4 +37,9 @@ const SubtaskContainer = styled.div`
   flex-flow: column nowrap;
 
   border-radius: 6px;
+`;
+
+const TestCont = styled.div`
+  height: 5px;
+  background-color: black;
 `;
